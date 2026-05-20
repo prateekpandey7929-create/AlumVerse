@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-2">AI Resume Analyzer</h2>
+
+<p class="text-muted mb-4">
+Upload your resume and check your ATS compatibility.
+</p>
+
+
+<div class="resume-card">
+
+<form method="POST" enctype="multipart/form-data">
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="alert alert-danger">
+    {{ message }}
+</div>
+{% endfor %}
+
+{% endif %}
+
+{% csrf_token %}
+
+<div class="mb-3">
+
+<label class="form-label">Upload Resume</label>
+
+<input type="file" name="resume" class="form-control">
+
+</div>
+
+<button class="btn btn-primary w-100">
+Analyze Resume
+</button>
+
+</form>
+
+</div>
+
+
+{% if score %}
+
+<div class="result-section mt-4">
+
+<div class="score-card">
+
+<h4>ATS Score</h4>
+
+<div class="score-number">
+{{ score }}%
+</div>
+
+<div class="progress mt-3">
+
+<div class="progress-bar bg-success"
+role="progressbar"
+style="width: {{ score }}%"
+aria-valuenow="{{ score }}"
+aria-valuemin="0"
+aria-valuemax="100">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="mt-4">
+
+<h5 class="mb-3">Missing Keywords</h5>
+
+<div class="row">
+
+{% for k in missing %}
+
+<div class="col-md-4">
+
+<div class="keyword-card">
+
+⚡ {{ k }}
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

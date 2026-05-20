@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid d-flex flex-column justify-content-center align-items-center" style="min-height:80vh;">
+
+    <h2 class="mb-5 fw-bold text-center">
+        AI Career Path Recommendation
+    </h2>
+
+    <div class="card shadow-lg border-0 text-center p-5" style="max-width:650px; width:100%; border-radius:15px;">
+
+        <h4 class="mb-3 fw-semibold text-primary">
+            Your Recommended Career
+        </h4>
+
+        <div style="font-size:20px; font-weight:500;">
+
+            <span class="badge bg-success p-3 m-1 fs-6">
+                {{ career.0 }}
+            </span>
+
+            <span class="badge bg-primary p-3 m-1 fs-6">
+                {{ career.1 }}
+            </span>
+
+        </div>
+
+        <hr class="my-4">
+
+        <p class="text-muted">
+            Based on your skills and interests, our AI suggests these career paths.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

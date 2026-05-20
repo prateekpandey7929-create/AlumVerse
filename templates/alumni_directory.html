@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-2">Alumni Directory</h2>
+
+<p class="text-muted mb-4">
+Connect with alumni across batches and departments
+</p>
+
+<!-- SEARCH BAR -->
+
+<div class="directory-search mb-4">
+
+<div class="row g-3">
+
+<div class="col-md-6">
+
+<input type="text" class="form-control"
+placeholder="Search by name or company...">
+
+</div>
+
+<div class="col-md-3">
+
+<select class="form-select">
+<option>All Batches</option>
+</select>
+
+</div>
+
+<div class="col-md-3">
+
+<select class="form-select">
+<option>All Departments</option>
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+{% for alum in alumni %}
+
+<div class="col-md-4">
+
+<div class="alumni-card">
+
+<div class="d-flex align-items-center mb-3">
+
+{% if alum.profile.profile_photo %}
+
+<img src="{{ alum.profile.profile_photo.url }}"
+class="alumni-avatar">
+
+{% else %}
+
+<img src="{% static 'images/default-profile.png' %}"
+class="alumni-avatar">
+
+{% endif %}
+
+<div class="ms-3">
+
+<h5 class="mb-0">{{ alum.username }}</h5>
+
+<p class="text-muted mb-0">
+{{ alum.profile.job_role }}
+</p>
+
+</div>
+
+</div>
+
+
+<div class="alumni-info">
+
+<p><b>Company:</b> {{ alum.profile.company }}</p>
+
+</div>
+
+<div class="text-center mt-3">
+
+<a href="/alumni-profile/{{ alum.id }}/"
+class="btn btn-outline-primary w-100">
+
+View Profile
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

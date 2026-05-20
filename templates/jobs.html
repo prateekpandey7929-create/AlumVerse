@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<h1 class="mb-2 fw-bold">Opportunities</h1>
+
+<p class="text-muted mb-4">
+Explore jobs, internships and events shared by alumni.
+</p>
+
+<a href="/post-job/" class="btn btn-primary mb-4">
+Post Opportunity
+</a>
+
+<div class="row g-4">
+
+{% for job in opportunities %}
+
+<div class="col-md-6">
+
+<div class="card opportunity-card shadow-sm">
+
+<div class="card-body">
+
+<div class="d-flex justify-content-between align-items-start">
+
+<h5 class="card-title mb-1">{{ job.title }}</h5>
+
+<span class="badge bg-primary">
+{{ job.type }}
+</span>
+
+</div>
+
+<p class="text-muted mb-2">
+
+<strong>{{ job.company }}</strong> • {{ job.location }}
+
+</p>
+
+<p class="mb-2 text-secondary">
+
+Deadline: {{ job.deadline }}
+
+</p>
+
+<p class="card-text">
+
+{{ job.description }}
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

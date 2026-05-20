@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-2">AI Recommended Alumni</h2>
+
+<p class="text-muted mb-4">
+These alumni match your skills and interests.
+</p>
+
+
+<div class="row">
+
+{% for alum in alumni %}
+
+<div class="col-md-4">
+
+<div class="recommend-card">
+
+<div class="d-flex align-items-center mb-3">
+
+{% if alum.profile_photo %}
+
+<img src="{{ alum.profile_photo.url }}" class="recommend-avatar">
+
+{% else %}
+
+<img src="{% static 'images/default-profile.png' %}" class="recommend-avatar">
+
+{% endif %}
+
+<div class="ms-3">
+
+<h5 class="mb-0">{{ alum.user.username }}</h5>
+
+<p class="text-muted mb-0">{{ alum.job_role }}</p>
+
+</div>
+
+</div>
+
+
+<div class="recommend-info">
+
+<p><b>Company:</b> {{ alum.company }}</p>
+
+<p><b>Skills:</b> {{ alum.skills }}</p>
+
+</div>
+
+
+<div class="mt-3 text-center">
+
+<a href="/alumni-profile/{{ alum.user.id }}/"
+class="btn btn-primary w-100">
+
+View Profile
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

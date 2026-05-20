@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<!-- Welcome -->
+
+<div class="welcome-card mb-4">
+
+<div class="row align-items-center">
+
+<div class="col-md-9">
+
+<h2>Welcome back, {{ user.username }} 👋</h2>
+
+<p class="text-muted">
+Manage your mentorship slots, job postings and student connections.
+</p>
+
+<span class="badge bg-primary">Alumni</span>
+
+</div>
+
+<div class="col-md-3 text-end">
+
+<img src="{% static 'images/default-profile.png' %}" class="profile-img">
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Stats -->
+
+<div class="row g-4 mb-4">
+
+<div class="col-md-4">
+<div class="stat-card">
+
+<h6>Total Mentorships</h6>
+<h2>24</h2>
+<span class="text-success">+2 this month</span>
+
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="stat-card">
+
+<h6>Active Job Posts</h6>
+<h2>5</h2>
+<span class="text-muted">12 applications received</span>
+
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="stat-card">
+
+<h6>Profile Views</h6>
+<h2>142</h2>
+<span class="text-success">+12% last month</span>
+
+</div>
+</div>
+
+</div>
+
+
+<h4 class="mb-3">Quick Actions</h4>
+
+<div class="row g-4">
+
+<!-- Profile -->
+
+<div class="col-md-4">
+
+<div class="dashboard-card text-center">
+
+<div class="icon blue">👤</div>
+
+<h5>Profile Management</h5>
+
+<p>Update experience and professional details</p>
+
+<a href="/profile/" class="btn btn-outline-primary w-100">
+Manage Profile
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Post Job -->
+
+<div class="col-md-4">
+
+<div class="dashboard-card text-center">
+
+<div class="icon green">💼</div>
+
+<h5>Post Job / Internship</h5>
+
+<p>Share opportunities for students</p>
+
+<a href="/post-job/" class="btn btn-outline-success w-100">
+Post Opportunity
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Inbox -->
+
+<div class="col-md-4">
+
+<div class="dashboard-card text-center">
+
+<div class="icon dark">💬</div>
+
+<h5>Student Messages</h5>
+
+<p>Chat with students and provide guidance</p>
+
+<a href="/inbox/" class="btn btn-outline-dark w-100">
+Open Inbox
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Notifications -->
+
+<div class="col-md-4">
+
+<div class="dashboard-card text-center">
+
+<div class="icon purple">🔔</div>
+
+<h5>Notifications</h5>
+
+<p>View important alerts and updates</p>
+
+<a href="/notifications/" class="btn btn-outline-secondary w-100">
+View Notifications
+</a>
+
+</div>
+
+</div>
+
+<!-- Profile -->
+
+<div class="col-md-4">
+
+<div class="dashboard-card text-center">
+
+<div class="icon purple">
+🔎
+</div>
+
+<h5>Alumni Directory</h5>
+
+<p>Search and connect with alumni network</p>
+
+<a href="/alumni/" class="btn btn-outline-primary w-100">
+Browse
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="row mt-5">
+
+<!-- Recent Chats -->
+
+<div class="col-md-6">
+
+<div class="dashboard-card">
+
+<h5 class="mb-3">Recent Chats</h5>
+
+<div class="job-item">
+
+<strong>Student Name 1</strong><br>
+<span class="text-muted">Asked about internship guidance</span>
+
+<a href="/inbox/" class="float-end">Reply</a>
+
+</div>
+
+<hr>
+
+<div class="job-item">
+
+<strong>Student Name 2</strong><br>
+<span class="text-muted">Requested mentorship session</span>
+
+<a href="/inbox/" class="float-end">Reply</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Upcoming Session -->
+
+<div class="col-md-6">
+
+<div class="dashboard-card text-center">
+
+<h5>Upcoming Mentorship Session</h5>
+
+<p class="text-muted mt-4">
+No upcoming sessions scheduled.
+</p>
+
+<a href="/post-job/" class="btn btn-primary">
+Create Slot
+</a>
+
+</div>
+
+</div>
+
+
+
+</div>
+
+</div>
+
+{% endblock %}

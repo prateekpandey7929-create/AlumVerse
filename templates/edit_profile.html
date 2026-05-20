@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="edit-profile-card">
+
+<h3 class="text-center mb-4">Edit Profile</h3>
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<div class="row g-3">
+
+<!-- Bio -->
+
+<div class="col-md-6">
+
+<label class="form-label">Bio</label>
+
+{{ form.bio }}
+
+</div>
+
+
+<!-- Skills -->
+
+<div class="col-md-6">
+
+<label class="form-label">Skills</label>
+
+{{ form.skills }}
+
+</div>
+
+
+<!-- Projects -->
+
+<div class="col-md-6">
+
+<label class="form-label">Projects</label>
+
+{{ form.projects }}
+
+</div>
+
+
+<!-- Achievements -->
+
+<div class="col-md-6">
+
+<label class="form-label">Achievements</label>
+
+{{ form.achievements }}
+
+</div>
+
+
+<!-- LinkedIn -->
+
+<div class="col-md-6">
+
+<label class="form-label">LinkedIn</label>
+
+{{ form.linkedin }}
+
+</div>
+
+
+<!-- GitHub -->
+
+<div class="col-md-6">
+
+<label class="form-label">GitHub</label>
+
+{{ form.github }}
+
+</div>
+
+
+<!-- Portfolio -->
+
+<div class="col-md-6">
+
+<label class="form-label">Portfolio</label>
+
+{{ form.portfolio }}
+
+</div>
+
+
+<!-- Company -->
+
+<div class="col-md-6">
+
+<label class="form-label">Company</label>
+
+{{ form.company }}
+
+</div>
+
+
+<!-- Job Role -->
+
+<div class="col-md-6">
+
+<label class="form-label">Job Role</label>
+
+{{ form.job_role }}
+
+</div>
+
+
+<!-- Experience -->
+
+<div class="col-md-6">
+
+<label class="form-label">Experience</label>
+
+{{ form.experience }}
+
+</div>
+
+
+<!-- Profile Photo -->
+
+<div class="col-md-12">
+
+<label class="form-label">Profile Photo</label>
+
+{{ form.profile_photo }}
+
+</div>
+
+</div>
+
+
+<div class="text-center mt-4">
+
+<button class="btn btn-success px-4">
+
+Update Profile
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

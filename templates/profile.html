@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<!-- PROFILE HEADER -->
+
+<div class="profile-header mb-4">
+
+<div class="row align-items-center">
+
+<div class="col-md-8 d-flex align-items-center">
+
+{% if user.profile.profile_photo %}
+<img src="{{ user.profile.profile_photo.url }}" class="profile-avatar">
+{% else %}
+<img src="{% static 'images/default-profile.png' %}" class="profile-avatar">
+{% endif %}
+
+<div class="ms-4">
+
+<h2 class="mb-1">{{ user.username }}</h2>
+
+<p class="text-light mb-2">
+{{ user.profile.job_role }} 
+</p>
+
+<span class="badge bg-light text-dark me-2">
+{{ user.profile.company }}
+</span>
+
+<span class="badge bg-light text-dark">
+{{ user.profile.experience }} yrs experience
+</span>
+
+</div>
+
+</div>
+
+<div class="col-md-4 text-end">
+
+<a href="/edit-profile/" class="btn btn-light">
+Edit Profile
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+<!-- LEFT COLUMN -->
+
+<div class="col-md-8">
+
+<div class="profile-card">
+
+<h4>About</h4>
+
+<p>{{ user.profile.bio }}</p>
+
+</div>
+
+
+<div class="profile-card">
+
+<h4>Skills</h4>
+
+<p>{{ user.profile.skills }}</p>
+
+</div>
+
+
+<div class="profile-card">
+
+<h4>Projects</h4>
+
+<p>{{ user.profile.projects }}</p>
+
+</div>
+
+
+<div class="profile-card">
+
+<h4>Achievements</h4>
+
+<p>{{ user.profile.achievements }}</p>
+
+</div>
+
+
+<div class="profile-card">
+
+<h4>Professional Experience</h4>
+
+<p>
+
+<b>{{ user.profile.job_role }}</b><br>
+
+{{ user.profile.company }}<br>
+
+{{ user.profile.experience }} years experience
+
+</p>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT COLUMN -->
+
+<div class="col-md-4">
+
+<div class="profile-card">
+
+<h5>Contact Information</h5>
+
+<p><b>Email:</b> {{ user.email }}</p>
+
+</div>
+
+
+<div class="profile-card">
+
+<h5>Social Links</h5>
+
+<p>
+
+<a href="{{ user.profile.linkedin }}">LinkedIn</a><br>
+
+<a href="{{ user.profile.github }}">GitHub</a><br>
+
+<a href="{{ user.profile.portfolio }}">Portfolio</a>
+
+</p>
+
+</div>
+
+
+<div class="profile-card">
+
+<h5>Profile Completion</h5>
+
+<div class="progress">
+
+<div class="progress-bar bg-success" style="width:80%">
+80%
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

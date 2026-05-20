@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+
+<section class="hero-image">
+
+<div class="hero-overlay">
+
+<div class="container text-center text-white">
+
+<h1 class="display-4 fw-bold">AlumVerse: IIST Alumni Network</h1>
+
+<p class="lead mt-3">
+AI-Enabled Alumni Tracking & Mentorship Platform for  
+Indore Institute of Science and Technology
+</p>
+
+<p class="mt-3">
+Connecting Students with Alumni for Career Growth,
+Mentorship and Opportunities
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<br>
+<br>
+<!-- ABOUT SECTION -->
+
+<section class="about-section" >
+
+<div class="container text-center">
+
+<h2 class="fw-bold mb-2">About AlumVerse</h2>
+
+<p class="text-muted">
+AlumVerse is an AI-enabled alumni tracking and engagement platform designed for 
+Indore Institute of Science and Technology. The system helps students connect 
+with alumni, discover mentorship opportunities, analyze their resumes, and 
+identify skill gaps required for career growth.
+</p>
+
+<br>
+<br>
+<h2 class="fw-bold mb-2">Key-Features</h2>
+
+<div class="row mt-4">
+
+<div class="col-md-3">
+<div class="feature-card">
+
+<img src="{% static 'images/alumni.png' %}" width="45" class="mb-3">
+
+<h5>Alumni Directory</h5>
+
+<p>
+Search and connect with alumni across different batches and departments.
+</p>
+
+</div>
+</div>
+
+
+<div class="col-md-3">
+<div class="feature-card">
+
+<img src="{% static 'images/ai.png' %}" width="45" class="mb-3">
+
+<h5>AI Alumni Recommendation</h5>
+
+<p>
+Get intelligent alumni suggestions based on your skills and interests.
+</p>
+
+</div>
+</div>
+
+
+<div class="col-md-3">
+<div class="feature-card">
+
+<img src="{% static 'images/resume.png' %}" width="45" class="mb-3">
+
+<h5>Resume Analyzer</h5>
+
+<p>
+Upload your resume and receive an ATS score with improvement suggestions.
+</p>
+
+</div>
+</div>
+
+
+<div class="col-md-3">
+<div class="feature-card">
+
+<img src="{% static 'images/mentorship.png' %}" width="45" class="mb-3">
+
+<h5>Mentorship Booking</h5>
+
+<p>
+Schedule mentorship sessions with experienced alumni for career guidance.
+</p>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</section>
+
+
+<!-- STATS -->
+
+<section class="py-5 text-center">
+
+<div class="container">
+
+<h2 class="fw-bold mb-5">Why Join AlumVerse?</h2>
+
+<div class="row">
+
+<div class="col-md-4">
+<h1 class="fw-bold text-primary">1000+</h1>
+<p class="text-muted">Active Alumni</p>
+</div>
+
+<div class="col-md-4">
+<h1 class="fw-bold text-success">50+</h1>
+<p class="text-muted">Annual Events</p>
+</div>
+
+<div class="col-md-4">
+<h1 class="fw-bold text-primary">100%</h1>
+<p class="text-muted">Community Support</p>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+{% endblock %}

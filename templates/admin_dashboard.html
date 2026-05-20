@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-4">Admin Dashboard</h2>
+
+
+<div class="row g-4">
+
+<div class="col-md-3">
+<div class="stat-card">
+
+<h6>Total Users</h6>
+<h3>{{ users }}</h3>
+
+</div>
+</div>
+
+
+<div class="col-md-3">
+<div class="stat-card">
+
+<h6>Total Students</h6>
+<h3>{{ students }}</h3>
+
+</div>
+</div>
+
+
+<div class="col-md-3">
+<div class="stat-card">
+
+<h6>Total Alumni</h6>
+<h3>{{ alumni }}</h3>
+
+</div>
+</div>
+
+
+<div class="col-md-3">
+<div class="stat-card">
+
+<h6>Total Jobs</h6>
+<h3>{{ jobs }}</h3>
+
+</div>
+</div>
+
+</div>
+
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+
+<div class="dashboard-card">
+
+<h5>Messages</h5>
+
+<p>Total messages exchanged in the system.</p>
+
+<h4>{{ messages }}</h4>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

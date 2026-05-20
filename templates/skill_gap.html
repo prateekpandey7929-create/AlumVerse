@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-2">AI Skill Gap Analyzer</h2>
+
+<p class="text-muted mb-4">
+Select your target career and discover which skills you need to improve.
+</p>
+
+
+<div class="skill-card">
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="mb-3">
+
+<label class="form-label">Target Career</label>
+
+<select name="career" class="form-select">
+
+<option>Backend Developer</option>
+<option>Data Scientist</option>
+<option>Frontend Developer</option>
+
+</select>
+
+</div>
+
+<button class="btn btn-primary w-100">
+Analyze Skills
+</button>
+
+</form>
+
+</div>
+
+
+{% if result %}
+
+<div class="mt-4">
+
+<h4 class="mb-3">Missing Skills</h4>
+
+<div class="row">
+
+{% for skill in result %}
+
+<div class="col-md-4">
+
+<div class="skill-result-card">
+
+<div class="skill-icon">⚡</div>
+
+<h6 class="mt-2">{{ skill }}</h6>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

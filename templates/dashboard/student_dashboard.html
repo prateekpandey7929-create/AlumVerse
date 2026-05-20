@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<!-- Welcome Card -->
+
+<div class="welcome-card mb-4">
+
+<div class="row align-items-center">
+
+<div class="col-md-9">
+
+<h2>Welcome back, {{ user.username }} 👋</h2>
+
+<p class="text-muted">
+Explore alumni, improve your skills and find opportunities.
+</p>
+
+<span class="badge bg-primary">Student</span>
+
+</div>
+
+<div class="col-md-3 text-end">
+
+<img src="{% static 'images/default-profile.png' %}"
+class="profile-img">
+
+</div>
+
+</div>
+
+</div>
+
+
+<h4 class="mb-3">Quick Actions</h4>
+
+<div class="row g-4">
+
+<!-- Profile -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon blue">
+👤
+</div>
+
+<h5>My Profile</h5>
+
+<p>Manage your academic and personal details</p>
+
+<a href="/profile/" class="btn btn-outline-primary w-100">
+View Profile
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Alumni Directory -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon purple">
+🔎
+</div>
+
+<h5>Alumni Directory</h5>
+
+<p>Search and connect with alumni network</p>
+
+<a href="/alumni/" class="btn btn-outline-primary w-100">
+Browse
+</a>
+
+</div>
+
+</div>
+
+
+<!-- AI Recommendation -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon pink">
+✨
+</div>
+
+<h5>AI Recommendation</h5>
+
+<p>Get AI matched mentors based on skills</p>
+
+<a href="/ai-recommendations/" class="btn btn-outline-primary w-100">
+Get Matches
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Skill Gap -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon green">
+📊
+</div>
+
+<h5>Skill Gap Analyzer</h5>
+
+<p>Compare skills with industry standards</p>
+
+<a href="/skill-gap/" class="btn btn-outline-primary w-100">
+Analyze
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Resume Analyzer -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon orange">
+📄
+</div>
+
+<h5>Resume Analyzer</h5>
+
+<p>AI feedback on your resume</p>
+
+<a href="/resume-analyzer/" class="btn btn-outline-primary w-100">
+Upload
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Mentorship -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon pink">
+📅
+</div>
+
+<h5>Career Path</h5>
+
+<p>Book sessions with alumni mentors</p>
+
+<a href="{% url 'career_path' %}" class="btn btn-outline-primary w-100">
+View Career Path
+</a>
+</div>
+
+</div>
+
+
+<!-- Events & Jobs -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon cyan">
+💼
+</div>
+
+<h5>Events & Jobs</h5>
+
+<p>Latest opportunities and webinars</p>
+
+<a href="/jobs/" class="btn btn-outline-primary w-100">
+Explore
+</a>
+
+</div>
+
+</div>
+
+
+<!-- Messaging -->
+
+<div class="col-md-3">
+
+<div class="dashboard-card">
+
+<div class="icon dark">
+💬
+</div>
+
+<h5>Messages</h5>
+
+<p>Instant communication with alumni</p>
+
+<a href="/inbox/" class="btn btn-outline-primary w-100">
+Chat Now
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="row mt-5">
+
+<!-- Jobs Section -->
+
+<div class="col-md-6">
+
+<div class="dashboard-card">
+
+<h5 class="mb-3">Recommended Jobs</h5>
+
+<div class="job-item">
+
+<strong>Frontend Developer</strong><br>
+<span class="text-muted">Google • Remote</span>
+
+<a href="/jobs/" class="float-end">Apply</a>
+
+</div>
+
+<hr>
+
+<div class="job-item">
+
+<strong>Frontend Developer</strong><br>
+<span class="text-muted">Google • Remote</span>
+
+<a href="/jobs/" class="float-end">Apply</a>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Mentorship -->
+
+<div class="col-md-6">
+
+<div class="dashboard-card text-center">
+
+<h5>Upcoming Mentorship Sessions</h5>
+
+<p class="text-muted mt-4">
+No upcoming sessions booked.
+</p>
+
+<a href="/alumni/" class="btn btn-primary">
+Find a Mentor
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

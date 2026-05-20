@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<div class="row justify-content-center">
+
+<div class="col-md-8">
+
+<div class="card shadow chat-card">
+
+<div class="card-header fw-bold">
+Chat with @{{ receiver.username }}
+</div>
+
+
+<<div class="card-body chat-box">
+
+{% for msg in messages %}
+
+{% if msg.sender == user %}
+
+<div class="d-flex justify-content-end mb-2">
+    <div class="sent-bubble">
+        {{ msg.message }}
+    </div>
+</div>
+
+{% else %}
+
+<div class="d-flex justify-content-start mb-2">
+    <div class="received-bubble">
+        {{ msg.message }}
+    </div>
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+</div>
+
+
+<div class="card-footer bg-white">
+
+<form method="POST" class="d-flex">
+
+{% csrf_token %}
+
+<input type="text"
+name="message"
+class="form-control me-2"
+placeholder="Type message...">
+
+<button class="btn btn-primary">
+Send
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

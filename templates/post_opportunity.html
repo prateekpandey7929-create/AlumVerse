@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<div class="row justify-content-center">
+
+<div class="col-md-6">
+
+<div class="card shadow-lg border-0">
+
+<div class="card-body p-4">
+
+<h3 class="mb-4 text-center fw-bold">
+Post Opportunity
+</h3>
+
+<form method="POST">
+
+{% csrf_token %}
+
+{{ form.as_p }}
+
+<div class="text-center mt-3">
+
+<button class="btn btn-success px-4">
+Post
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

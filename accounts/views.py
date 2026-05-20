@@ -55,7 +55,6 @@ def register(request):
 # =========================
 
 def user_login(request):
-
     if request.method == "POST":
 
         username = request.POST.get("username")
@@ -68,19 +67,14 @@ def user_login(request):
             password=password
         )
 
-        # ================= WRONG CREDENTIALS =================
-
+        # Wrong credentials
         if user is None:
 
-            messages.error(
-                request,
-                "Invalid email or password"
-            )
+            messages.error(request, "Invalid email or password")
 
-            return redirect('/login/')
+            return redirect("/login/")
 
-        # ================= ADMIN LOGIN =================
-
+        # Admin login
         if role == "admin":
 
             if user.is_staff:
@@ -91,15 +85,11 @@ def user_login(request):
 
             else:
 
-                messages.error(
-                    request,
-                    "You are not authorized as Admin"
-                )
+                messages.error(request, "You are not authorized as Admin")
 
-                return redirect('/login/')
+                return redirect("/login/")
 
-        # ================= STUDENT LOGIN =================
-
+        # Student login
         elif role == "student":
 
             if user.role == "student":
@@ -110,15 +100,11 @@ def user_login(request):
 
             else:
 
-                messages.error(
-                    request,
-                    "Student account not found"
-                )
+                messages.error(request, "Student account not found")
 
-                return redirect('/login/')
+                return redirect("/login/")
 
-        # ================= ALUMNI LOGIN =================
-
+        # Alumni login
         elif role == "alumni":
 
             if user.role == "alumni":
@@ -129,12 +115,9 @@ def user_login(request):
 
             else:
 
-                messages.error(
-                    request,
-                    "Alumni account not found"
-                )
+                messages.error(request, "Alumni account not found")
 
-                return redirect('/login/')
+                return redirect("/login/")
 
     return render(request, "login.html")
 

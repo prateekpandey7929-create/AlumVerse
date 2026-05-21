@@ -9,20 +9,26 @@ from .models import Profile, Notification
 from jobs.models import Opportunity
 from messaging.models import Message
 
-# =========================
+# =========================================
 
 # REGISTER VIEW
 
-# =========================
+# =========================================
 
 def register(request):
+
     if request.method == 'POST':
 
         form = RegisterForm(request.POST)
 
         if form.is_valid():
 
-            form.save()
+            user = form.save(commit=False)
+
+            # Only student registration allowed
+            user.role = "student"
+
+            user.save()
 
             messages.success(
                 request,
@@ -48,11 +54,11 @@ def register(request):
         {'form': form}
     )
 
-# =========================
+# =========================================
 
 # LOGIN VIEW
 
-# =========================
+# =========================================
 
 def user_login(request):
     if request.method == "POST":
@@ -67,67 +73,82 @@ def user_login(request):
             password=password
         )
 
-        # Wrong credentials
+        # WRONG CREDENTIALS
+
         if user is None:
 
-            messages.error(request, "Invalid email or password")
+            messages.error(
+                request,
+                "Invalid email or password"
+            )
 
-            return redirect("/login/")
+            return redirect('/login/')
 
-        # Admin login
+        # ADMIN LOGIN
+
         if role == "admin":
 
             if user.is_staff:
 
                 login(request, user)
 
-                return redirect("/admin/")
+                return redirect('/admin/')
 
             else:
 
-                messages.error(request, "You are not authorized as Admin")
+                messages.error(
+                    request,
+                    "You are not authorized as Admin"
+                )
 
-                return redirect("/login/")
+                return redirect('/login/')
 
-        # Student login
+        # STUDENT LOGIN
+
         elif role == "student":
 
             if user.role == "student":
 
                 login(request, user)
 
-                return redirect("/dashboard/")
+                return redirect('/dashboard/')
 
             else:
 
-                messages.error(request, "Student account not found")
+                messages.error(
+                    request,
+                    "Student account not found"
+                )
 
-                return redirect("/login/")
+                return redirect('/login/')
 
-        # Alumni login
+        # ALUMNI LOGIN
+
         elif role == "alumni":
 
             if user.role == "alumni":
 
                 login(request, user)
 
-                return redirect("/dashboard/")
+                return redirect('/dashboard/')
 
             else:
 
-                messages.error(request, "Alumni account not found")
+                messages.error(
+                    request,
+                    "Alumni account not found"
+                )
 
-                return redirect("/login/")
+                return redirect('/login/')
 
     return render(request, "login.html")
 
 
-
-# =========================
+# =========================================
 
 # DASHBOARD VIEW
 
-# =========================
+# =========================================
 
 @login_required
 def dashboard(request):
@@ -149,23 +170,29 @@ def dashboard(request):
 
         return redirect('/')
 
-
-# =========================
+# =========================================
 
 # PROFILE VIEW
 
-# =========================
+# =========================================
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    profile, created = Profile.objects.get_or_create(
+        user=request.user
+    )
 
+    return render(
+        request,
+        'profile.html',
+        {'profile': profile}
+    )
 
-# =========================
+# =========================================
 
 # EDIT PROFILE VIEW
 
-# =========================
+# =========================================
 
 @login_required
 def edit_profile(request):
@@ -202,17 +229,16 @@ def edit_profile(request):
         {'form': form}
     )
 
-# =========================
+# =========================================
 
 # NOTIFICATIONS VIEW
 
-# =========================
+# =========================================
 
 @login_required
 def notifications(request):
     notifications = Notification.objects.filter(
-        user=request.user,
-        is_read=False
+        user=request.user
     ).order_by('-created_at')
 
     Notification.objects.filter(
@@ -226,11 +252,12 @@ def notifications(request):
         {'notifications': notifications}
     )
 
-# =========================
+
+# =========================================
 
 # LOGOUT VIEW
 
-# =========================
+# =========================================
 
 def user_logout(request):
     logout(request)
@@ -240,13 +267,13 @@ def user_logout(request):
         "Logged out successfully"
     )
 
-    return redirect("/")
+    return redirect('/')
 
-# =========================
+# =========================================
 
 # ALUMNI REQUEST VIEW
 
-# =========================
+# =========================================
 
 def alumni_request(request):
     if request.method == "POST":

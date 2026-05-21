@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="login-page" style="background-image:url('{% static "images/login-bg.jpg" %}')">
+<div class="login-page" style="background-image: url('{% static 'images/login-bg.jpg' %}');">
 
 <div class="login-overlay">
 
@@ -19,21 +19,25 @@
 
 <h2 class="mt-3">Welcome Back</h2>
 
-<p class="text-muted">Sign in to your AlumVerse account</p>
+<p class="text-muted">
+Sign in to your AlumVerse account
+</p>
 
 </div>
 
-<!-- 🔴 ERROR MESSAGE -->
+<!-- ERROR MESSAGES -->
 
 {% if messages %}
 
+```
 {% for message in messages %}
 
-<div class="alert alert-danger">
-    {{ message }}
-</div>
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
 
 {% endfor %}
+```
 
 {% endif %}
 
@@ -43,39 +47,93 @@
 
 <div class="mb-3">
 
-<label class="form-label">Email Address</label>
+<label class="form-label">
+Email Address
+</label>
 
-<input type="text" name="username" class="form-control" placeholder="Enter your email">
+<input
+type="text"
+name="username"
+class="form-control"
+placeholder="Enter your email"
+required
+
+>
 
 </div>
 
 <div class="mb-3">
 
-<label class="form-label">Password</label>
+<label class="form-label">
+Password
+</label>
 
-<input type="password" name="password" class="form-control" placeholder="Enter your password">
+<input
+type="password"
+name="password"
+class="form-control"
+placeholder="Enter your password"
+required
+
+>
 
 </div>
 
 <div class="mb-3">
 
-<label class="form-label">Login As</label>
+<label class="form-label">
+Login As
+</label>
 
 <div class="d-flex gap-3">
 
 <div class="form-check">
-<input class="form-check-input" type="radio" name="role" value="admin">
-<label class="form-check-label">Admin</label>
+
+<input
+class="form-check-input"
+type="radio"
+name="role"
+value="admin"
+
+>
+
+<label class="form-check-label">
+Admin
+</label>
+
 </div>
 
 <div class="form-check">
-<input class="form-check-input" type="radio" name="role" value="alumni">
-<label class="form-check-label">Alumni</label>
+
+<input
+class="form-check-input"
+type="radio"
+name="role"
+value="alumni"
+
+>
+
+<label class="form-check-label">
+Alumni
+</label>
+
 </div>
 
 <div class="form-check">
-<input class="form-check-input" type="radio" name="role" value="student" checked>
-<label class="form-check-label">Student</label>
+
+<input
+class="form-check-input"
+type="radio"
+name="role"
+value="student"
+checked
+
+>
+
+<label class="form-check-label">
+Student
+</label>
+
 </div>
 
 </div>
@@ -83,14 +141,21 @@
 </div>
 
 <button class="btn btn-primary w-100 mt-2">
+
 Login
+
 </button>
 
 </form>
 
 <p class="text-center mt-3">
+
 Don't have an account?
-<a href="/register/">Register here</a>
+
+<a href="/register/">
+Register here
+</a>
+
 </p>
 
 </div>

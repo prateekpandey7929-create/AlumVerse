@@ -44,8 +44,8 @@ def resume_analyzer(request):
                 for page in pdf.pages:
                     text += page.extract_text() or ""
 
-            from .resume_analyzer import analyze_resume
-            score, missing = analyze_resume(text)
+            from .resume_analyzer import analyze_resume as analyze_resume_function
+            score, missing = analyze_resume_function(file)
 
         except Exception:
             messages.error(request, "Invalid or corrupted PDF file")

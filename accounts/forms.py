@@ -2,6 +2,7 @@ import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, Profile, AlumniRequest
+from datetime import datetime
 
 # ===============================
 
@@ -22,6 +23,20 @@ class RegisterForm(UserCreationForm):
             'password1',
             'password2'
         ]
+
+    def clean_graduation_year(self):
+        graduation_year = self.cleaned_data.get("graduation_year")
+
+        current_year = datetime.now().year
+
+        # Prevent alumni registration from website
+        if graduation_year < current_year:
+
+            raise forms.ValidationError(
+                "Graduation year cannot be in the past."
+            )
+
+        return graduation_year
 
     def clean_password1(self):
         password = self.cleaned_data.get("password1")

@@ -2,165 +2,156 @@
 {% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<!-- PROFILE HEADER -->
+    <!-- PROFILE HEADER BANNER -->
+    <div class="profile-header mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8 d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+                <img src="{{ user.profile.profile_photo_url }}" class="profile-avatar mb-3 mb-md-0" alt="Avatar">
+                <div class="ms-md-4">
+                    <h2 class="mb-1 text-white fw-bold">{{ user.full_name|default:user.username }}</h2>
+                    <p class="text-light opacity-90 mb-3" style="font-size: 15px; font-weight: 500;">
+                        <i class="bi bi-briefcase me-1"></i> {% if user.profile.job_role %}{{ user.profile.job_role }}{% else %}{% if user.role == 'alumni' %}Alumni Member{% else %}Student Member{% endif %}{% endif %}
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+                        {% if user.profile.company %}
+                            <span class="badge bg-light text-dark shadow-sm">
+                                <i class="bi bi-building me-1"></i> {{ user.profile.company }}
+                            </span>
+                        {% endif %}
+                        {% if user.profile.experience %}
+                            <span class="badge bg-light text-dark shadow-sm">
+                                <i class="bi bi-clock me-1"></i> {{ user.profile.experience }} yrs exp
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center text-md-end">
+                <a href="/edit-profile/" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold">
+                    <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
 
-<div class="profile-header mb-4">
+    <!-- Content Row -->
+    <div class="row g-4">
+        <!-- LEFT COLUMN SECTION -->
+        <div class="col-lg-8 col-md-12">
+            <!-- About Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-info-circle text-primary me-2"></i>About Professional</h4>
+                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                    {{ user.profile.bio|default:"Describe yourself by updating your biography." }}
+                </p>
+            </div>
 
-<div class="row align-items-center">
+            <!-- Skills Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-puzzle text-primary me-2"></i>Verified Skills</h4>
+                {% if user.profile.skills %}
+                    <p class="text-secondary mb-0" style="font-size: 14.5px;">
+                        {{ user.profile.skills }}
+                    </p>
+                {% else %}
+                    <p class="text-muted small mb-0">No specific skills listed. Edit your profile to list skills.</p>
+                {% endif %}
+            </div>
 
-<div class="col-md-8 d-flex align-items-center">
+            <!-- Projects Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-kanban text-primary me-2"></i>Projects & Accomplishments</h4>
+                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                    {{ user.profile.projects|default:"No active project details declared." }}
+                </p>
+            </div>
 
-{% if user.profile.profile_photo %}
-<img src="{{ user.profile.profile_photo.url }}" class="profile-avatar">
-{% else %}
-<img src="{% static 'images/default-profile.png' %}" class="profile-avatar">
-{% endif %}
+            <!-- Achievements Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-trophy text-primary me-2"></i>Key Achievements</h4>
+                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                    {{ user.profile.achievements|default:"No awards or achievements added yet." }}
+                </p>
+            </div>
 
-<div class="ms-4">
+            <!-- Job Experience Details -->
+            <div class="profile-card">
+                <h4><i class="bi bi-journal-check text-primary me-2"></i>Employment Experience</h4>
+                <div class="p-3 bg-light rounded" style="border-left: 4px solid var(--primary);">
+                    <h5 class="mb-1 fw-bold text-dark">{% if user.profile.job_role %}{{ user.profile.job_role }}{% else %}{% if user.role == 'alumni' %}Alumni Member{% else %}Student Member{% endif %}{% endif %}</h5>
+                    <p class="mb-2 text-primary" style="font-weight: 500;">{{ user.profile.company|default:"N/A" }}</p>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-calendar3 me-1"></i> Cumulative Experience: {{ user.profile.experience|default:"0" }} years
+                    </p>
+                </div>
+            </div>
+        </div>
 
-<h2 class="mb-1">{{ user.username }}</h2>
+        <!-- RIGHT COLUMN SECTION -->
+        <div class="col-lg-4 col-md-12">
+            <!-- Contact Card -->
+            <div class="profile-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-envelope-at-fill text-primary me-2"></i>Contact Info</h5>
+                <div class="mb-3">
+                    <label class="form-label mb-0 text-muted small">College Email (Registered)</label>
+                    <p class="mb-2 text-dark fw-medium">{{ user.email }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label mb-0 text-muted small">Personal Email (Alternative Login)</label>
+                    {% if user.personal_email %}
+                        <p class="mb-2 text-dark fw-medium">{{ user.personal_email }}</p>
+                        <a href="/profile/add-personal-email/" class="btn btn-sm btn-outline-secondary w-100 mt-1">
+                            <i class="bi bi-pencil me-1"></i> Change Personal Email
+                        </a>
+                    {% else %}
+                        <p class="mb-2 text-muted small">No personal email added yet</p>
+                        <a href="/profile/add-personal-email/" class="btn btn-sm btn-outline-primary w-100 mt-1">
+                            <i class="bi bi-plus-lg me-1"></i> Add Personal Email
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
 
-<p class="text-light mb-2">
-{{ user.profile.job_role }} 
-</p>
+            <!-- Social Card -->
+            <div class="profile-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-link-45deg text-primary me-2"></i>Social Handles</h5>
+                <div class="d-flex flex-column gap-2 mt-2">
+                    {% if user.profile.linkedin %}
+                        <a href="{{ user.profile.linkedin }}" target="_blank" class="btn btn-outline-primary text-start w-100 py-2">
+                            <i class="bi bi-linkedin me-2"></i> LinkedIn Profile
+                        </a>
+                    {% endif %}
+                    
+                    {% if user.profile.github %}
+                        <a href="{{ user.profile.github }}" target="_blank" class="btn btn-outline-primary text-start w-100 py-2">
+                            <i class="bi bi-github me-2"></i> GitHub Repository
+                        </a>
+                    {% endif %}
 
-<span class="badge bg-light text-dark me-2">
-{{ user.profile.company }}
-</span>
+                    {% if user.profile.portfolio %}
+                        <a href="{{ user.profile.portfolio }}" target="_blank" class="btn btn-outline-primary text-start w-100 py-2">
+                            <i class="bi bi-globe me-2"></i> Personal Portfolio
+                        </a>
+                    {% endif %}
 
-<span class="badge bg-light text-dark">
-{{ user.profile.experience }} yrs experience
-</span>
+                    {% if not user.profile.linkedin and not user.profile.github and not user.profile.portfolio %}
+                        <p class="text-muted small mb-0">No external social connections provided.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Profile Completion Card -->
+            <div class="profile-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-percent text-primary me-2"></i>Profile Completion</h5>
+                <div class="progress mt-3 mb-2" style="height: 12px;">
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
+                </div>
+                <small class="text-muted d-block mt-2">Add accomplishments to hit 100%.</small>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-</div>
-
-<div class="col-md-4 text-end">
-
-<a href="/edit-profile/" class="btn btn-light">
-Edit Profile
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="row">
-
-<!-- LEFT COLUMN -->
-
-<div class="col-md-8">
-
-<div class="profile-card">
-
-<h4>About</h4>
-
-<p>{{ user.profile.bio }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Skills</h4>
-
-<p>{{ user.profile.skills }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Projects</h4>
-
-<p>{{ user.profile.projects }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Achievements</h4>
-
-<p>{{ user.profile.achievements }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Professional Experience</h4>
-
-<p>
-
-<b>{{ user.profile.job_role }}</b><br>
-
-{{ user.profile.company }}<br>
-
-{{ user.profile.experience }} years experience
-
-</p>
-
-</div>
-
-</div>
-
-
-<!-- RIGHT COLUMN -->
-
-<div class="col-md-4">
-
-<div class="profile-card">
-
-<h5>Contact Information</h5>
-
-<p><b>Email:</b> {{ user.email }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h5>Social Links</h5>
-
-<p>
-
-<a href="{{ user.profile.linkedin }}">LinkedIn</a><br>
-
-<a href="{{ user.profile.github }}">GitHub</a><br>
-
-<a href="{{ user.profile.portfolio }}">Portfolio</a>
-
-</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h5>Profile Completion</h5>
-
-<div class="progress">
-
-<div class="progress-bar bg-success" style="width:80%">
-80%
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

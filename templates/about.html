@@ -1,83 +1,66 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<div class="container py-5">
 
-<div class="container py-4">
+    <!-- Header Title -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle text-primary me-2"></i>About AlumVerse</h2>
+        <p class="text-muted mb-0" style="font-size: 16px; max-width: 600px; margin: 0 auto;">
+            AI-powered alumni networking and career development tracking system for Indore Institute of Science & Technology.
+        </p>
+    </div>
 
-<h2 class="mb-4 text-center fw-bold">About Alumverse</h2>
+    <!-- Main Card -->
+    <div class="about-card p-5 mb-5 shadow-sm border-light" style="border-radius: var(--radius-lg);">
+        <h4 class="fw-bold text-dark mb-3">Connecting IIST Generation Lines</h4>
+        <p class="text-secondary" style="font-size: 15px; line-height: 1.8;">
+            <strong>AlumVerse</strong> bridges the gap between current students and graduating batches. Using clean database feeds and AI-based matcher models, our application links students with specific alumni professionals based on skills, career track alignments and goals.
+        </p>
+        <p class="text-secondary" style="font-size: 15px; line-height: 1.8; margin-bottom: 0;">
+            Whether you want to calculate your resume's ATS compatibility score, run mock career path validations, trace technical skill gaps, or message verified company leads, AlumVerse gives IIST members a centralized portal for growth.
+        </p>
+    </div>
 
-<p class="text-muted mb-4">
-AI-powered alumni networking and career development platform.
-</p>
+    <!-- Feature Row -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="about-feature text-center h-100 p-4">
+                <div class="about-icon mb-3">
+                    <i class="bi bi-people-fill text-primary"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Alumni Networking</h5>
+                <p class="text-muted small mb-0">
+                    Connect with working professionals across diverse fields and organizations globally.
+                </p>
+            </div>
+        </div>
 
+        <div class="col-md-4">
+            <div class="about-feature text-center h-100 p-4">
+                <div class="about-icon mb-3">
+                    <i class="bi bi-cpu-fill text-primary"></i>
+                </div>
+                <h5 class="fw-bold text-dark">AI Career Tools</h5>
+                <p class="text-muted small mb-0">
+                    Analyze resumes for ATS scores, match career paths and find exact technology skill gaps.
+                </p>
+            </div>
+        </div>
 
-<div class="about-card">
-
-<p>
-<strong>AlumVerse</strong> is an AI powered alumni tracking and networking platform that connects students with alumni for mentorship, career guidance and job opportunities.
-</p>
-
-<p>
-Students can explore alumni profiles, analyze skill gaps, receive career recommendations and interact with alumni professionals to build strong industry connections.
-</p>
-
-</div>
-
-
-<div class="row mt-4">
-
-<div class="col-md-4">
-
-<div class="about-feature text-center">
-
-<div class="about-icon">🎓</div>
-
-<h5 class="mt-2">Alumni Networking</h5>
-
-<p class="text-muted">
-Connect with alumni from different industries and career paths.
-</p>
-
-</div>
-
-</div>
-
-
-<div class="col-md-4">
-
-<div class="about-feature text-center">
-
-<div class="about-icon">🤖</div>
-
-<h5 class="mt-2">AI Career Tools</h5>
-
-<p class="text-muted">
-Analyze skills, resumes and receive career recommendations.
-</p>
-
-</div>
-
-</div>
-
-
-<div class="col-md-4">
-
-<div class="about-feature text-center">
-
-<div class="about-icon">💼</div>
-
-<h5 class="mt-2">Opportunities</h5>
-
-<p class="text-muted">
-Discover internships, jobs and mentorship opportunities.
-</p>
+        <div class="col-md-4">
+            <div class="about-feature text-center h-100 p-4">
+                <div class="about-icon mb-3">
+                    <i class="bi bi-briefcase-fill text-primary"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Job Placement Opportunities</h5>
+                <p class="text-muted small mb-0">
+                    Discover internships, hiring events, and mentorship sessions shared directly by IIST alumni.
+                </p>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

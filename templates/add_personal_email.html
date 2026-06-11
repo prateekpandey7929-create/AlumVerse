@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4" style="border-radius: 12px;">
+                <div class="text-center mb-4">
+                    <div class="icon-wrapper" style="font-size: 32px; background: rgba(0, 83, 204, 0.1); width: 70px; height: 70px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--primary);">
+                        <i class="bi bi-envelope-plus-fill"></i>
+                    </div>
+                    <h3 class="fw-bold mt-3 text-dark">Add Personal Email</h3>
+                    <p class="text-muted small">
+                        Please provide a personal email address (e.g. @gmail.com) so you can access AlumVerse even after graduation.
+                    </p>
+                </div>
+
+                <!-- MESSAGES -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if 'success' in message.tags %}alert-success{% else %}alert-danger{% endif %} shadow-sm">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- ERROR BOX -->
+                {% if form.errors %}
+                    <div class="alert alert-danger shadow-sm">
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><b>{{ field.label }}:</b> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Personal Email Address</label>
+                        {{ form.personal_email }}
+                        <div class="form-text text-muted small mt-2">
+                            A verification code will be simulated and sent to this email address.
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="/profile/" class="btn btn-outline-secondary w-100 py-2.5 fw-bold" style="border-radius: 8px;">Cancel</a>
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm" style="border-radius: 8px;">
+                            Send OTP
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

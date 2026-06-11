@@ -1,34 +1,34 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<div class="container py-5">
 
-<div class="container py-4">
+    <!-- Header Title -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark mb-2"><i class="bi bi-file-earmark-ruled-fill text-primary me-2"></i>Terms of Service</h2>
+        <p class="text-muted mb-0" style="font-size: 15px;">
+            Guidelines and rules for using the Indore Institute of Science & Technology alumni engagement portal.
+        </p>
+    </div>
 
-<h2 class="mb-4 text-center fw-bold">Terms of Service</h2>
+    <!-- Content Card -->
+    <div class="policy-card p-5 shadow-sm border-light" style="border-radius: var(--radius-lg); font-size: 15px;">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-check-fill text-primary me-2"></i>User Verification & Access</h5>
+        <p class="text-secondary mb-4">
+            By accessing <strong>AlumVerse</strong>, you verify that the graduation details, branch selection, and professional records you submit are accurate. Students and alumni are expected to keep their contact cards up to date.
+        </p>
 
-<p class="text-muted mb-4">
-Guidelines for using the AlumVerse platform.
-</p>
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-chat-quote-fill text-primary me-2"></i>Professional Engagement Standards</h5>
+        <p class="text-secondary mb-4">
+            All conversations, mentorship booking sessions, and questions sent through the chat system must maintain professional and academic etiquette. Harassment, spam, or false internship postings are strictly prohibited.
+        </p>
 
-<div class="policy-card">
-
-<p>
-By using <strong>AlumVerse</strong>, you agree to use the platform responsibly
-and maintain professional and respectful communication with other users.
-</p>
-
-<p>
-Users must ensure that the information provided in their profiles is accurate
-and appropriate for a professional networking environment.
-</p>
-
-<p>
-Any misuse of the platform including harassment, spamming, or sharing false
-information may result in account restrictions or removal from the system.
-</p>
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-exclamation-triangle-fill text-primary me-2"></i>Account Restrictions</h5>
+        <p class="text-secondary mb-0">
+            IIST administration panels reserve the right to audit connection attempts, verify registration details, and restrict access for accounts found violating these guidelines.
+        </p>
+    </div>
 
 </div>
-
-</div>
-
 {% endblock %}

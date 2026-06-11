@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Title Header -->
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2 class="mb-2 fw-bold text-dark"><i class="bi bi-people-fill text-primary me-2"></i>IIST Community Discussion Hub</h2>
+            <p class="text-muted mb-0" style="font-size: 15px;">
+                Ask doubts, share placement tips, and network. Any student or alumni can respond here.
+            </p>
+        </div>
+        <div>
+            <span class="badge bg-success px-3 py-2"><i class="bi bi-shield-check-fill me-1"></i> Verified Channels</span>
+        </div>
+    </div>
+
+    <!-- Chat Card -->
+    <div class="row justify-content-center">
+        <div class="col-xl-9 col-lg-11">
+            <div class="card shadow-sm border-light chat-card">
+                
+                <!-- Chat Header -->
+                <div class="card-header bg-white py-3 px-4 d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-primary-bg p-2 text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-chat-text-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-dark">Group Discussion Channel</h6>
+                        <small class="text-muted" style="font-size: 11px;">{{ messages.count }} message(s) posted</small>
+                    </div>
+                </div>
+
+                <!-- Messages area -->
+                <div class="card-body chat-box" style="height: 480px; background-color: #f8f9fa;">
+                    {% for msg in messages %}
+                        {% if msg.sender == user %}
+                            <!-- Sender (Self) Message block -->
+                            <div class="d-flex justify-content-end mb-4">
+                                <div class="sent-bubble" style="max-width: 75%;">
+                                    <div class="d-flex align-items-center gap-1.5 mb-1 text-white opacity-90" style="font-size: 11px; font-weight: 500;">
+                                        <span>Me ({{ msg.sender.username }})</span>
+                                        <span class="badge bg-light text-dark py-0 px-1.5" style="font-size: 9px;">
+                                            {% if msg.sender.role == "alumni" %}
+                                                Alumni
+                                            {% elif msg.sender.role == "admin" %}
+                                                Admin
+                                            {% else %}
+                                                Student
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="message-content" style="font-size: 14px; line-height: 1.5;">{{ msg.message }}</div>
+                                    <small class="text-white opacity-75 d-block text-end mt-1" style="font-size: 9px; font-weight: 400;">
+                                        {{ msg.created_at|date:"M d, P" }}
+                                    </small>
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- Receiver / Others Message block -->
+                            <div class="d-flex justify-content-start mb-4">
+                                <div class="received-bubble" style="max-width: 75%;">
+                                    <div class="d-flex align-items-center gap-1.5 mb-1" style="font-size: 11px; font-weight: 500;">
+                                        <span class="text-primary fw-bold">@{{ msg.sender.username }}</span>
+                                        
+                                        <!-- User Role Badge -->
+                                        {% if msg.sender.role == "alumni" %}
+                                            <span class="badge bg-success text-success-hover py-0 px-1.5" style="font-size: 9px;"><i class="bi bi-patch-check-fill me-0.5"></i>Alumni</span>
+                                        {% elif msg.sender.role == "admin" %}
+                                            <span class="badge bg-warning text-warning-hover py-0 px-1.5" style="font-size: 9px;">Admin</span>
+                                        {% else %}
+                                            <span class="badge bg-primary text-primary-hover py-0 px-1.5" style="font-size: 9px;">Student</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="message-content text-secondary" style="font-size: 14px; line-height: 1.5;">{{ msg.message }}</div>
+                                    <small class="text-muted d-block mt-1" style="font-size: 9px;">
+                                        {{ msg.created_at|date:"M d, P" }}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="text-center py-5 text-muted h-100 d-flex flex-column align-items-center justify-content-center">
+                            <i class="bi bi-chat-quote fs-1 mb-2 d-block text-muted opacity-50"></i>
+                            <h5 class="fw-bold mb-1 text-dark">Welcome to Community Channel!</h5>
+                            <p class="small mb-0 px-4" style="max-width: 420px;">No messages have been posted in this forum yet. Be the first to ask a doubt or greet the network!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Input form footer -->
+                <div class="card-footer bg-white border-top p-3">
+                    <form method="POST" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <input type="text" name="message" class="form-control py-2.5" placeholder="Share a career doubt or announcement..." required autocomplete="off">
+                        <button class="btn btn-success px-4 d-flex align-items-center gap-1.5 shadow-sm">
+                            <span>Post</span> <i class="bi bi-chat-square-dots-fill"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Auto-scroll to bottom of chatbox -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var chatbox = document.querySelector(".chat-box");
+        if (chatbox) {
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    });
+</script>
+{% endblock %}

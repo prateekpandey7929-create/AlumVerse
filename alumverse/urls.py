@@ -7,13 +7,20 @@ from . import views
 
 from accounts.views import (
 register,
+verify_otp,
 user_login,
 dashboard,
 profile,
 edit_profile,
 user_logout,
 notifications,
-alumni_request
+alumni_request,
+add_personal_email,
+verify_personal_email,
+admin_user_add,
+admin_user_edit,
+admin_user_delete,
+admin_approve_request
 )
 
 from alumni.views import (
@@ -29,7 +36,8 @@ job_list
 
 from messaging.views import (
 send_message,
-inbox
+inbox,
+community_chat
 )
 
 from ai_features.views import (
@@ -75,6 +83,8 @@ urlpatterns = [
 
     path('register/', register),
 
+    path('verify-otp/', verify_otp),
+
     path('login/', user_login),
 
     path('logout/', user_logout),
@@ -86,7 +96,19 @@ urlpatterns = [
 
     path('profile/', profile),
 
+    path('profile/add-personal-email/', add_personal_email),
+
+    path('profile/verify-personal-email/', verify_personal_email),
+
     path('edit-profile/', edit_profile),
+
+    path('admin-dashboard/add-user/', admin_user_add),
+
+    path('admin-dashboard/edit-user/<int:user_id>/', admin_user_edit),
+
+    path('admin-dashboard/delete-user/<int:user_id>/', admin_user_delete),
+
+    path('admin-dashboard/approve-request/<int:request_id>/', admin_approve_request),
 
 
     # ================= ALUMNI =================
@@ -108,6 +130,8 @@ urlpatterns = [
 
 
     # ================= MESSAGING =================
+
+    path('messages/community/', community_chat),
 
     path('messages/<int:user_id>/', send_message),
 

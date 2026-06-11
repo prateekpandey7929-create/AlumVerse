@@ -1,74 +1,240 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<h2 class="mb-4">Admin Dashboard</h2>
+    <!-- Header -->
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap g-3">
+        <div>
+            <h2 class="mb-1 fw-bold text-dark"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Administration Center</h2>
+            <p class="text-muted mb-0" style="font-size: 15px;">
+                Monitor platform growth metrics, manage user accounts, and approve verification requests.
+            </p>
+        </div>
+        <div>
+            <a href="/admin-dashboard/add-user/" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm" style="border-radius: 8px;">
+                <i class="bi bi-person-plus-fill me-2"></i>Add New User
+            </a>
+        </div>
+    </div>
 
+    <!-- Stats row -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px;">
+                <h6 class="text-muted mb-1 small fw-bold text-uppercase">Total Users</h6>
+                <h2 class="fw-bold mb-2">{{ users_count }}</h2>
+                <span class="badge bg-primary-subtle text-primary"><i class="bi bi-people-fill me-1"></i> Total registered</span>
+            </div>
+        </div>
 
-<div class="row g-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px;">
+                <h6 class="text-muted mb-1 small fw-bold text-uppercase">Students</h6>
+                <h2 class="fw-bold mb-2">{{ students_count }}</h2>
+                <span class="badge bg-info-subtle text-info"><i class="bi bi-mortarboard-fill me-1"></i> Undergraduates</span>
+            </div>
+        </div>
 
-<div class="col-md-3">
-<div class="stat-card">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px;">
+                <h6 class="text-muted mb-1 small fw-bold text-uppercase">Alumni</h6>
+                <h2 class="fw-bold mb-2">{{ alumni_count }}</h2>
+                <span class="badge bg-success-subtle text-success"><i class="bi bi-patch-check-fill me-1"></i> Verified Mentors</span>
+            </div>
+        </div>
 
-<h6>Total Users</h6>
-<h3>{{ users }}</h3>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card" style="background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px;">
+                <h6 class="text-muted mb-1 small fw-bold text-uppercase">Opportunities</h6>
+                <h2 class="fw-bold mb-2">{{ jobs_count }}</h2>
+                <span class="badge bg-warning-subtle text-warning"><i class="bi bi-briefcase-fill me-1"></i> Jobs & Internships</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages / Growth Alert -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if 'success' in message.tags %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show shadow-sm border-0 mb-4" role="alert" style="border-radius: 8px;">
+                <div style="white-space: pre-line;">{{ message }}</div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-pills mb-4 gap-2 bg-white p-2 rounded shadow-sm border" id="adminTabs" role="tablist" style="max-width: fit-content;">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold py-2 px-4" id="users-tab" data-bs-toggle="pill" data-bs-target="#users-panel" type="button" role="tab" aria-controls="users-panel" aria-selected="true" style="border-radius: 8px;">
+                <i class="bi bi-people-fill me-2"></i>Manage Users
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold py-2 px-4 position-relative" id="requests-tab" data-bs-toggle="pill" data-bs-target="#requests-panel" type="button" role="tab" aria-controls="requests-panel" aria-selected="false" style="border-radius: 8px;">
+                <i class="bi bi-file-earmark-check-fill me-2"></i>Alumni Access Requests
+                {% if pending_requests.count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">
+                        {{ pending_requests.count }}
+                    </span>
+                {% endif %}
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tabs Content -->
+    <div class="tab-content" id="adminTabsContent">
+        
+        <!-- 1️⃣ MANAGE USERS PANEL -->
+        <div class="tab-pane fade show active" id="users-panel" role="tabpanel" aria-labelledby="users-tab">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-table text-primary me-2"></i>System Accounts</h5>
+                    <input type="text" id="userSearchInput" onkeyup="searchUsers()" class="form-control form-control-sm border" placeholder="Quick search users by name or email..." style="max-width: 300px; border-radius: 8px;">
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="usersTable">
+                        <thead class="table-light text-uppercase" style="font-size: 12px; letter-spacing: 0.5px;">
+                            <tr>
+                                <th class="ps-4">Name / Username</th>
+                                <th>Email Address</th>
+                                <th>Enrollment No</th>
+                                <th>Role</th>
+                                <th>Joined Date</th>
+                                <th class="text-center pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ u.profile.profile_photo_url }}" class="rounded-circle me-3" width="38" height="38" style="object-fit: cover; border: 1px solid #ddd;">
+                                            <div>
+                                                <strong class="text-dark d-block">{{ u.full_name|default:u.username }}</strong>
+                                                <small class="text-muted">@{{ u.username }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ u.email }}</td>
+                                    <td><span class="font-monospace text-secondary">{{ u.enrollment_no|default:"—" }}</span></td>
+                                    <td>
+                                        {% if u.role == 'admin' %}
+                                            <span class="badge bg-danger-subtle text-danger text-uppercase px-2.5 py-1.5" style="font-size: 10px; font-weight: 700;">Administrator</span>
+                                        {% elif u.role == 'alumni' %}
+                                            <span class="badge bg-success-subtle text-success text-uppercase px-2.5 py-1.5" style="font-size: 10px; font-weight: 700;">Alumni</span>
+                                        {% else %}
+                                            <span class="badge bg-info-subtle text-info text-uppercase px-2.5 py-1.5" style="font-size: 10px; font-weight: 700;">Student</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="font-size: 13.5px;" class="text-muted">{{ u.date_joined|date:"d M Y" }}</td>
+                                    <td class="text-center pe-4">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="/admin-dashboard/edit-user/{{ u.id }}/" class="btn btn-sm btn-outline-primary px-3" style="border-radius: 6px;">
+                                                <i class="bi bi-pencil-square me-1"></i>Edit
+                                            </a>
+                                            {% if u != request.user %}
+                                                <a href="/admin-dashboard/delete-user/{{ u.id }}/" onclick="return confirm('Are you sure you want to delete user {{ u.full_name|default:u.username }}? This action is irreversible.')" class="btn btn-sm btn-outline-danger px-3" style="border-radius: 6px;">
+                                                    <i class="bi bi-trash-fill me-1"></i>Delete
+                                                </a>
+                                            {% else %}
+                                                <button class="btn btn-sm btn-outline-secondary px-3" disabled style="border-radius: 6px; cursor: not-allowed;">Self</button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="bi bi-people fs-1 mb-2 d-block text-secondary"></i>
+                                        <h6>No User Records Found</h6>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2️⃣ ALUMNI ACCESS REQUESTS PANEL -->
+        <div class="tab-pane fade" id="requests-panel" role="tabpanel" aria-labelledby="requests-tab">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-patch-check text-primary me-2"></i>Pending Verifications</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase" style="font-size: 12px; letter-spacing: 0.5px;">
+                            <tr>
+                                <th class="ps-4">Full Name</th>
+                                <th>Scholar / Enrollment No</th>
+                                <th>Department / Branch</th>
+                                <th>Graduation Year</th>
+                                <th>Registered Email</th>
+                                <th class="text-center pe-4">Approval Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in pending_requests %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-placeholder me-3 rounded-circle bg-light text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px;">
+                                                {{ req.name|slice:":1" }}
+                                            </div>
+                                            <strong>{{ req.name }}</strong>
+                                        </div>
+                                    </td>
+                                    <td><span class="font-monospace text-secondary">{{ req.scholar_no }}</span></td>
+                                    <td>{{ req.branch }}</td>
+                                    <td><span class="badge bg-secondary-subtle text-secondary">{{ req.graduation_year }}</span></td>
+                                    <td>{{ req.email }}</td>
+                                    <td class="text-center pe-4">
+                                        <a href="/admin-dashboard/approve-request/{{ req.id }}/" class="btn btn-sm btn-success px-4 fw-semibold" style="border-radius: 6px;">
+                                            <i class="bi bi-check-lg me-1"></i>Approve & Upgrade
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="bi bi-shield-check fs-1 mb-2 d-block text-success"></i>
+                                        <h6 class="fw-bold mb-1">No Pending Requests</h6>
+                                        <p class="text-muted small mb-0">All alumni requests have been processed successfully!</p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </div>
-</div>
 
+<!-- Quick search filter script -->
+<script>
+    function searchUsers() {
+        var input = document.getElementById("userSearchInput");
+        var filter = input.value.toLowerCase().trim();
+        var table = document.getElementById("usersTable");
+        var trs = table.getElementsByTagName("tr");
 
-<div class="col-md-3">
-<div class="stat-card">
-
-<h6>Total Students</h6>
-<h3>{{ students }}</h3>
-
-</div>
-</div>
-
-
-<div class="col-md-3">
-<div class="stat-card">
-
-<h6>Total Alumni</h6>
-<h3>{{ alumni }}</h3>
-
-</div>
-</div>
-
-
-<div class="col-md-3">
-<div class="stat-card">
-
-<h6>Total Jobs</h6>
-<h3>{{ jobs }}</h3>
-
-</div>
-</div>
-
-</div>
-
-
-<div class="row mt-4">
-
-<div class="col-md-4">
-
-<div class="dashboard-card">
-
-<h5>Messages</h5>
-
-<p>Total messages exchanged in the system.</p>
-
-<h4>{{ messages }}</h4>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+        for (var i = 1; i < trs.length; i++) {
+            var tr = trs[i];
+            if (tr) {
+                var text = tr.innerText.toLowerCase();
+                if (text.indexOf(filter) > -1) {
+                    tr.style.display = "";
+                } else {
+                    tr.style.display = "none";
+                }
+            }
+        }
+    }
+</script>
 {% endblock %}

@@ -2,246 +2,154 @@
 {% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<!-- Welcome -->
+    <!-- Welcome Card -->
+    <div class="welcome-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h2 class="mb-2">Welcome back, {{ user.full_name|default:user.username }} 👋</h2>
+                <p class="text-muted mb-3" style="font-size: 15px;">
+                    Thank you for supporting the IIST community. Manage your booking slots, review job postings, and guide active student members.
+                </p>
+                <span class="badge bg-success px-3 py-2"><i class="bi bi-patch-check-fill me-1"></i> Verified Alumni</span>
+            </div>
+            <div class="col-md-3 text-md-end text-center mt-3 mt-md-0">
+                <img src="{{ user.profile.profile_photo_url }}" class="profile-img" alt="Profile Image">
+            </div>
+        </div>
+    </div>
 
-<div class="welcome-card mb-4">
+    <!-- Stats row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h6>Total Mentorships</h6>
+                <h2>{{ total_mentorships }}</h2>
+                <span class="badge bg-success"><i class="bi bi-arrow-up-right me-1"></i> active</span>
+            </div>
+        </div>
 
-<div class="row align-items-center">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h6>Active Job Posts</h6>
+                <h2>{{ active_jobs_count }}</h2>
+                <span class="badge bg-primary"><i class="bi bg-transparent me-1"></i> posted by you</span>
+            </div>
+        </div>
 
-<div class="col-md-9">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <h6>Profile Views</h6>
+                <h2>{{ profile_views }}</h2>
+                <span class="badge bg-success"><i class="bi bi-arrow-up-right me-1"></i> live views</span>
+            </div>
+        </div>
+    </div>
 
-<h2>Welcome back, {{ user.username }} 👋</h2>
+    <!-- Quick Actions Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 mt-5">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Alumni Operations</h4>
+    </div>
 
-<p class="text-muted">
-Manage your mentorship slots, job postings and student connections.
-</p>
+    <div class="row g-4">
+        <!-- Post Job -->
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon green">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <h5>Post Job / Internship</h5>
+                <p>Share exciting career opportunities at your organization with IIST students.</p>
+                <a href="/post-job/" class="btn btn-outline-success w-100 mt-auto">
+                    Post Opportunity
+                </a>
+            </div>
+        </div>
 
-<span class="badge bg-primary">Alumni</span>
+        <!-- Inbox -->
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon dark">
+                    <i class="bi bi-chat-left-dots-fill"></i>
+                </div>
+                <h5>Discussions & Messages</h5>
+                <p>Engage in community boards or answer student queries privately.</p>
+                <div class="d-flex gap-2 mt-auto">
+                    <a href="/messages/community/" class="btn btn-primary w-100 py-2 btn-sm">Community</a>
+                    <a href="/inbox/" class="btn btn-outline-primary w-100 py-2 btn-sm">Inbox</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="icon purple">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+                <h5>Notifications</h5>
+                <p>Keep track of connection requests, bookings and announcements.</p>
+                <a href="/notifications/" class="btn btn-outline-secondary w-100 mt-auto">
+                    View Notifications
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feeds Grid -->
+    <div class="row mt-5 g-4">
+        <!-- Recent Chats -->
+        <div class="col-lg-6">
+            <div class="card h-100 shadow-sm border-light">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-chat-dots text-primary me-2"></i>Recent Chats</h5>
+                    <a href="/inbox/" class="btn btn-sm btn-outline-primary px-3">Open Inbox</a>
+                </div>
+                <div class="card-body p-4">
+                    {% if recent_chats %}
+                        {% for chat in recent_chats %}
+                            <div class="job-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-dark">{{ chat.user.full_name|default:chat.user.username }}</strong>
+                                    <div class="text-muted small mt-1 text-truncate" style="max-width: 280px;">
+                                        {{ chat.last_message }}
+                                    </div>
+                                </div>
+                                <a href="/inbox/" class="btn btn-sm btn-outline-primary">Reply</a>
+                            </div>
+                            {% if not forloop.last %}
+                                <hr class="my-3 text-muted opacity-25">
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-chat-left-dots fs-3 mb-2 d-block"></i>
+                            <span>No messages</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Session -->
+        <div class="col-lg-6">
+            <div class="card h-100 shadow-sm border-light text-center">
+                <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                    <div class="rounded-circle bg-light p-3 mb-3 text-primary" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+                    <h5 class="fw-bold">Upcoming Mentorship Session</h5>
+                    <p class="text-muted small px-md-5 mt-2 mb-4">
+                        You do not have any upcoming mentorship sessions scheduled. Create slots to allow students to book sessions.
+                    </p>
+                    <a href="/post-job/" class="btn btn-primary px-4">
+                        Create Slot
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-<div class="col-md-3 text-end">
-
-<img src="{% static 'images/default-profile.png' %}" class="profile-img">
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- Stats -->
-
-<div class="row g-4 mb-4">
-
-<div class="col-md-4">
-<div class="stat-card">
-
-<h6>Total Mentorships</h6>
-<h2>24</h2>
-<span class="text-success">+2 this month</span>
-
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="stat-card">
-
-<h6>Active Job Posts</h6>
-<h2>5</h2>
-<span class="text-muted">12 applications received</span>
-
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="stat-card">
-
-<h6>Profile Views</h6>
-<h2>142</h2>
-<span class="text-success">+12% last month</span>
-
-</div>
-</div>
-
-</div>
-
-
-<h4 class="mb-3">Quick Actions</h4>
-
-<div class="row g-4">
-
-<!-- Profile -->
-
-<div class="col-md-4">
-
-<div class="dashboard-card text-center">
-
-<div class="icon blue">👤</div>
-
-<h5>Profile Management</h5>
-
-<p>Update experience and professional details</p>
-
-<a href="/profile/" class="btn btn-outline-primary w-100">
-Manage Profile
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Post Job -->
-
-<div class="col-md-4">
-
-<div class="dashboard-card text-center">
-
-<div class="icon green">💼</div>
-
-<h5>Post Job / Internship</h5>
-
-<p>Share opportunities for students</p>
-
-<a href="/post-job/" class="btn btn-outline-success w-100">
-Post Opportunity
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Inbox -->
-
-<div class="col-md-4">
-
-<div class="dashboard-card text-center">
-
-<div class="icon dark">💬</div>
-
-<h5>Student Messages</h5>
-
-<p>Chat with students and provide guidance</p>
-
-<a href="/inbox/" class="btn btn-outline-dark w-100">
-Open Inbox
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Notifications -->
-
-<div class="col-md-4">
-
-<div class="dashboard-card text-center">
-
-<div class="icon purple">🔔</div>
-
-<h5>Notifications</h5>
-
-<p>View important alerts and updates</p>
-
-<a href="/notifications/" class="btn btn-outline-secondary w-100">
-View Notifications
-</a>
-
-</div>
-
-</div>
-
-<!-- Profile -->
-
-<div class="col-md-4">
-
-<div class="dashboard-card text-center">
-
-<div class="icon purple">
-🔎
-</div>
-
-<h5>Alumni Directory</h5>
-
-<p>Search and connect with alumni network</p>
-
-<a href="/alumni/" class="btn btn-outline-primary w-100">
-Browse
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="row mt-5">
-
-<!-- Recent Chats -->
-
-<div class="col-md-6">
-
-<div class="dashboard-card">
-
-<h5 class="mb-3">Recent Chats</h5>
-
-<div class="job-item">
-
-<strong>Student Name 1</strong><br>
-<span class="text-muted">Asked about internship guidance</span>
-
-<a href="/inbox/" class="float-end">Reply</a>
-
-</div>
-
-<hr>
-
-<div class="job-item">
-
-<strong>Student Name 2</strong><br>
-<span class="text-muted">Requested mentorship session</span>
-
-<a href="/inbox/" class="float-end">Reply</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- Upcoming Session -->
-
-<div class="col-md-6">
-
-<div class="dashboard-card text-center">
-
-<h5>Upcoming Mentorship Session</h5>
-
-<p class="text-muted mt-4">
-No upcoming sessions scheduled.
-</p>
-
-<a href="/post-job/" class="btn btn-primary">
-Create Slot
-</a>
-
-</div>
-
-</div>
-
-
-
-</div>
-
-</div>
-
 {% endblock %}

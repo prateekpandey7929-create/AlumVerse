@@ -1,75 +1,72 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<h2 class="mb-2">AI Skill Gap Analyzer</h2>
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="mb-2 fw-bold text-dark"><i class="bi bi-bar-chart-steps text-primary me-2"></i>AI Skill Gap Analyzer</h2>
+        <p class="text-muted mb-0" style="font-size: 15px;">
+            Select your target career path to compare your profile skills with current global industry job requirements.
+        </p>
+    </div>
 
-<p class="text-muted mb-4">
-Select your target career and discover which skills you need to improve.
-</p>
+    <!-- Selection card -->
+    <div class="skill-card mb-5">
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label class="form-label fw-bold mb-2">Select Target Career</label>
+                <select name="career" class="form-select border-1 py-2.5">
+                    <option {% if request.POST.career == "Backend Developer" %}selected{% endif %}>Backend Developer</option>
+                    <option {% if request.POST.career == "Data Scientist" %}selected{% endif %}>Data Scientist</option>
+                    <option {% if request.POST.career == "Frontend Developer" %}selected{% endif %}>Frontend Developer</option>
+                </select>
+                <div class="form-text text-muted small mt-1">
+                    AI will query real-time market standards for this engineering track.
+                </div>
+            </div>
 
+            <button class="btn btn-primary w-100 py-2.5 shadow-sm">
+                <i class="bi bi-cpu-fill me-1"></i> Analyze Skill Gaps
+            </button>
+        </form>
+    </div>
 
-<div class="skill-card">
+    <!-- Results Section -->
+    {% if result %}
+        <div class="mt-4">
+            <h4 class="mb-3 fw-bold text-dark"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Identified Skill Gaps for: {{ request.POST.career }}</h4>
+            <p class="text-muted small mb-4">Our model suggests learning or strengthening these capabilities to qualify for standard roles in this track:</p>
+            
+            <div class="row g-4">
+                {% for skill in result %}
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                        <div class="skill-result-card h-100 mb-0 d-flex flex-column align-items-center justify-content-center p-4">
+                            <div class="skill-icon mb-3">
+                                <i class="bi bi-lightning-fill"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-0">{{ skill }}</h6>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
 
-<form method="POST">
-
-{% csrf_token %}
-
-<div class="mb-3">
-
-<label class="form-label">Target Career</label>
-
-<select name="career" class="form-select">
-
-<option>Backend Developer</option>
-<option>Data Scientist</option>
-<option>Frontend Developer</option>
-
-</select>
-
-</div>
-
-<button class="btn btn-primary w-100">
-Analyze Skills
-</button>
-
-</form>
-
-</div>
-
-
-{% if result %}
-
-<div class="mt-4">
-
-<h4 class="mb-3">Missing Skills</h4>
-
-<div class="row">
-
-{% for skill in result %}
-
-<div class="col-md-4">
-
-<div class="skill-result-card">
-
-<div class="skill-icon">⚡</div>
-
-<h6 class="mt-2">{{ skill }}</h6>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-{% endif %}
+            <!-- Recommendation Tip Card -->
+            <div class="alert alert-success mt-5 d-flex align-items-start gap-3 p-4" style="border-left: 4px solid var(--success);">
+                <i class="bi bi-lightbulb-fill fs-3 text-success-hover mt-0.5"></i>
+                <div>
+                    <h5 class="fw-bold mb-1">How to close these gaps?</h5>
+                    <p class="mb-0 text-secondary" style="font-size: 14.5px;">
+                        Connect with verified alumni in the <strong>Alumni Directory</strong> who list these exact competencies in their profiles. You can ask them for resource recommendations, learning repositories, or project ideas.
+                    </p>
+                    <a href="/alumni/" class="btn btn-success btn-sm mt-3 px-3">Browse Directory Mentors</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
 </div>
-
 {% endblock %}

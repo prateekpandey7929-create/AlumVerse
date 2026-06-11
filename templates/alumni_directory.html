@@ -2,109 +2,99 @@
 {% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<h2 class="mb-2">Alumni Directory</h2>
+    <!-- Title Header -->
+    <div class="mb-4">
+        <h2 class="mb-2 fw-bold text-dark"><i class="bi bi-people-fill text-primary me-2"></i>Alumni Directory</h2>
+        <p class="text-muted mb-0" style="font-size: 15px;">
+            Search and build networks with Indore Institute of Science & Technology alumni across different departments and batches.
+        </p>
+    </div>
 
-<p class="text-muted mb-4">
-Connect with alumni across batches and departments
-</p>
+    <!-- Search Form Filter -->
+    <div class="directory-search mb-4">
+        <form method="GET" action="/alumni-search/">
+            <div class="row g-3">
+                <div class="col-lg-6 col-md-12">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" class="form-control border-start-0" placeholder="Search alumni by name, skill, or company..." style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0;">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <select class="form-select" name="batch">
+                        <option value="">All Batches</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="d-flex gap-2">
+                        <select class="form-select" name="dept">
+                            <option value="">All Departments</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Electronics & Comm.">Electronics & Comm.</option>
+                            <option value="Mechanical Eng.">Mechanical Eng.</option>
+                            <option value="Civil Eng.">Civil Eng.</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary px-3"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
-<!-- SEARCH BAR -->
+    <!-- Cards Grid -->
+    <div class="row g-4 mt-2">
+        {% for alum in alumni %}
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="alumni-card d-flex flex-column h-100 mb-0">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ alum.profile.profile_photo_url }}" class="alumni-avatar" alt="{{ alum.username }}">
+                        <div class="ms-3">
+                            <h5 class="mb-1 fw-bold text-dark">{{ alum.full_name|default:alum.username }}</h5>
+                            <p class="text-muted mb-0 small" style="font-weight: 500;">
+                                <i class="bi bi-briefcase me-1"></i> {{ alum.profile.job_role|default:"Alumni Member" }}
+                            </p>
+                        </div>
+                    </div>
 
-<div class="directory-search mb-4">
+                    <div class="alumni-info flex-grow-1">
+                        {% if alum.profile.company %}
+                            <p class="mb-2 text-secondary"><strong class="text-dark">Company:</strong> {{ alum.profile.company }}</p>
+                        {% endif %}
+                        {% if alum.profile.skills %}
+                            <p class="mb-0 text-secondary"><strong class="text-dark">Skills:</strong> 
+                                <span class="text-muted" style="font-size: 13px;">{{ alum.profile.skills }}</span>
+                            </p>
+                        {% endif %}
+                    </div>
 
-<div class="row g-3">
-
-<div class="col-md-6">
-
-<input type="text" class="form-control"
-placeholder="Search by name or company...">
-
-</div>
-
-<div class="col-md-3">
-
-<select class="form-select">
-<option>All Batches</option>
-</select>
-
-</div>
-
-<div class="col-md-3">
-
-<select class="form-select">
-<option>All Departments</option>
-</select>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="row">
-
-{% for alum in alumni %}
-
-<div class="col-md-4">
-
-<div class="alumni-card">
-
-<div class="d-flex align-items-center mb-3">
-
-{% if alum.profile.profile_photo %}
-
-<img src="{{ alum.profile.profile_photo.url }}"
-class="alumni-avatar">
-
-{% else %}
-
-<img src="{% static 'images/default-profile.png' %}"
-class="alumni-avatar">
-
-{% endif %}
-
-<div class="ms-3">
-
-<h5 class="mb-0">{{ alum.username }}</h5>
-
-<p class="text-muted mb-0">
-{{ alum.profile.job_role }}
-</p>
-
-</div>
-
-</div>
-
-
-<div class="alumni-info">
-
-<p><b>Company:</b> {{ alum.profile.company }}</p>
-
-</div>
-
-<div class="text-center mt-3">
-
-<a href="/alumni-profile/{{ alum.id }}/"
-class="btn btn-outline-primary w-100">
-
-View Profile
-
-</a>
-
-</div>
-
-</div>
+                    <div class="mt-4 pt-3 border-top d-flex gap-2">
+                        <a href="/alumni-profile/{{ alum.id }}/" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-eye-fill me-1"></i> View Profile
+                        </a>
+                        <a href="/messages/{{ alum.id }}/" class="btn btn-primary px-3">
+                            <i class="bi bi-chat-fill"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="rounded-circle bg-light p-3 mx-auto mb-3 text-muted" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h5 class="fw-bold">No Alumni Found</h5>
+                <p class="text-muted small">No verified alumni accounts exist on this platform yet.</p>
+            </div>
+        {% endfor %}
+    </div>
 
 </div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
 {% endblock %}

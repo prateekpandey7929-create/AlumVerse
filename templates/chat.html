@@ -1,72 +1,77 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<div class="container py-4">
 
-<div class="container py-5">
-
-<div class="row justify-content-center">
-
-<div class="col-md-8">
-
-<div class="card shadow chat-card">
-
-<div class="card-header fw-bold">
-Chat with @{{ receiver.username }}
-</div>
-
-
-<<div class="card-body chat-box">
-
-{% for msg in messages %}
-
-{% if msg.sender == user %}
-
-<div class="d-flex justify-content-end mb-2">
-    <div class="sent-bubble">
-        {{ msg.message }}
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="/inbox/" class="text-decoration-none text-muted small fw-medium">
+            <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+        </a>
     </div>
-</div>
 
-{% else %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card chat-card">
+                
+                <!-- Card Header -->
+                <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
+                    <div class="d-flex align-items-center">
+                        <img src="{% static 'images/default-profile.png' %}" class="chat-avatar me-2" alt="Avatar" style="width: 40px; height: 40px;">
+                        <div>
+                            <h6 class="mb-0 fw-bold text-dark">@{{ receiver.username }}</h6>
+                            <small class="text-muted" style="font-size: 11px;"><span class="badge bg-success py-0.5 px-1.5"><i class="bi bi-circle-fill" style="font-size: 6px; vertical-align: middle;"></i> Chatting</span></small>
+                        </div>
+                    </div>
+                </div>
 
-<div class="d-flex justify-content-start mb-2">
-    <div class="received-bubble">
-        {{ msg.message }}
+                <!-- Chat Body (Typo Fixed) -->
+                <div class="card-body chat-box">
+                    {% for msg in messages %}
+                        {% if msg.sender == user %}
+                            <div class="d-flex justify-content-end mb-3">
+                                <div class="sent-bubble">
+                                    <div class="message-content">{{ msg.message }}</div>
+                                    <small class="text-white opacity-75 d-block text-end mt-1" style="font-size: 10px;">Sent</small>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="d-flex justify-content-start mb-3">
+                                <div class="received-bubble">
+                                    <div class="message-content">{{ msg.message }}</div>
+                                    <small class="text-muted d-block mt-1" style="font-size: 10px;">Received</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-chat-dots fs-1 mb-2 d-block"></i>
+                            <h6 class="fw-bold mb-1">No Messages Yet</h6>
+                            <p class="small mb-0">Start the conversation by sending a message below.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Card Footer Form -->
+                <div class="card-footer bg-white border-top">
+                    <form method="POST" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <input type="text"
+                               name="message"
+                               class="form-control py-2.5"
+                               placeholder="Write your message here..."
+                               required
+                               autocomplete="off">
+                        <button class="btn btn-primary px-4 d-flex align-items-center gap-1">
+                            <span>Send</span> <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
     </div>
-</div>
-
-{% endif %}
-
-{% endfor %}
 
 </div>
-
-
-<div class="card-footer bg-white">
-
-<form method="POST" class="d-flex">
-
-{% csrf_token %}
-
-<input type="text"
-name="message"
-class="form-control me-2"
-placeholder="Type message...">
-
-<button class="btn btn-primary">
-Send
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

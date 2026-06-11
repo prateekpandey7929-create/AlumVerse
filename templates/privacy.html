@@ -1,36 +1,34 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<div class="container py-5">
 
-<div class="container py-4">
+    <!-- Header Title -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark mb-2"><i class="bi bi-shield-fill-check text-primary me-2"></i>Privacy Policy</h2>
+        <p class="text-muted mb-0" style="font-size: 15px;">
+            Your privacy and database security are critical foundations of the AlumVerse portal.
+        </p>
+    </div>
 
-<h2 class="mb-4 text-center fw-bold">Privacy Policy</h2>
+    <!-- Content Card -->
+    <div class="policy-card p-5 shadow-sm border-light" style="border-radius: var(--radius-lg); font-size: 15px;">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-database-lock text-primary me-2"></i>Information Collection & Storage</h5>
+        <p class="text-secondary mb-4">
+            <strong>AlumVerse</strong> respects your privacy. All personal details including academic years, verification credentials, profile photos, contact details, resume uploads and communication chats are securely stored and encrypted inside the platform's PostgreSQL database.
+        </p>
 
-<p class="text-muted mb-4">
-Your privacy and data security are important to us.
-</p>
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-check2-circle text-primary me-2"></i>Usage Scope</h5>
+        <p class="text-secondary mb-4">
+            The data collected is utilized strictly for professional networking, career mentorship recommendations, skill gap analysis, job opportunity matching, and educational engagement within Indore Institute of Science & Technology's verified members network.
+        </p>
 
-<div class="policy-card">
-
-<p>
-<strong>AlumVerse</strong> respects your privacy. All personal data including
-user profiles, contact information, and professional details are securely
-stored and protected within the platform.
-</p>
-
-<p>
-The information collected is used strictly for networking, mentorship,
-career guidance, and educational purposes within the alumni community.
-</p>
-
-<p>
-We do not share personal data with third parties without user consent.
-Our goal is to maintain a secure and trusted environment for both students
-and alumni.
-</p>
-
-</div>
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-eye-slash-fill text-primary me-2"></i>Third-Party Sharing</h5>
+        <p class="text-secondary mb-0">
+            We do not sell, rent, or share personal profile details with third-party external networks without explicit user approval. All security settings can be audited from your profile configuration page.
+        </p>
+    </div>
 
 </div>
-
 {% endblock %}

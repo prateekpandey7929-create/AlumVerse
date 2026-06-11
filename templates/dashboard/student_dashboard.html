@@ -2,285 +2,169 @@
 {% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<!-- Welcome Card -->
+    <!-- Welcome Card -->
+    <div class="welcome-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h2 class="mb-2">Welcome back, {{ user.full_name|default:user.username }} 👋</h2>
+                <p class="text-muted mb-3" style="font-size: 15px;">
+                    Explore alumni directory, test your resume against ATS standards, examine skill gaps and search for job opportunities.
+                </p>
+                <span class="badge bg-primary px-3 py-2"><i class="bi bi-mortarboard-fill me-1"></i> Student Member</span>
+            </div>
+            <div class="col-md-3 text-md-end text-center mt-3 mt-md-0">
+                <img src="{{ user.profile.profile_photo_url }}" class="profile-img" alt="Profile Image">
+            </div>
+        </div>
+    </div>
 
-<div class="welcome-card mb-4">
+    <!-- Quick Actions Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 mt-5">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Tools & Actions</h4>
+    </div>
 
-<div class="row align-items-center">
+    <div class="row g-4">
+        <!-- AI Recommendation -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="icon pink">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <h5>AI Recommendations</h5>
+                <p>Get instant recommendations matching your target skillsets and majors.</p>
+                <a href="/ai-recommendations/" class="btn btn-outline-primary w-100 mt-auto">
+                    Get Matches
+                </a>
+            </div>
+        </div>
 
-<div class="col-md-9">
+        <!-- Skill Gap -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="icon green">
+                    <i class="bi bi-bar-chart-steps"></i>
+                </div>
+                <h5>Skill Gap Analyzer</h5>
+                <p>Compare your current capabilities with latest industry demands.</p>
+                <a href="/skill-gap/" class="btn btn-outline-primary w-100 mt-auto">
+                    Analyze Gaps
+                </a>
+            </div>
+        </div>
 
-<h2>Welcome back, {{ user.username }} 👋</h2>
+        <!-- Resume Analyzer -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="icon orange">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+                <h5>Resume Analyzer</h5>
+                <p>Upload your resume and get immediate ATS feedback and suggestions.</p>
+                <a href="/resume-analyzer/" class="btn btn-outline-primary w-100 mt-auto">
+                    Analyze Resume
+                </a>
+            </div>
+        </div>
 
-<p class="text-muted">
-Explore alumni, improve your skills and find opportunities.
-</p>
+        <!-- Mentorship -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="icon pink">
+                    <i class="bi bi-calendar2-week-fill"></i>
+                </div>
+                <h5>Career Path</h5>
+                <p>Explore recommended career paths based on industry projections.</p>
+                <a href="{% url 'career_path' %}" class="btn btn-outline-primary w-100 mt-auto">
+                    View Career Path
+                </a>
+            </div>
+        </div>
 
-<span class="badge bg-primary">Student</span>
+        <!-- Events & Jobs -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="icon cyan">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <h5>Jobs & Internships</h5>
+                <p>Discover placement opportunities posted directly by IIST alumni.</p>
+                <a href="/jobs/" class="btn btn-outline-primary w-100 mt-auto">
+                    Explore Jobs
+                </a>
+            </div>
+        </div>
+
+        <!-- Messaging -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card">
+                <div class="icon dark">
+                    <i class="bi bi-chat-left-dots-fill"></i>
+                </div>
+                <h5>Discussions & Inbox</h5>
+                <p>Join group chats with peer students or message mentors privately.</p>
+                <div class="d-flex gap-2 mt-auto">
+                    <a href="/messages/community/" class="btn btn-primary w-100 py-2 btn-sm">Community</a>
+                    <a href="/inbox/" class="btn btn-outline-primary w-100 py-2 btn-sm">Inbox</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="row mt-5 g-4">
+        <!-- Jobs Section -->
+        <div class="col-lg-6">
+            <div class="card h-100 shadow-sm border-light">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-bookmark-star text-primary me-2"></i>Recommended Jobs</h5>
+                    <a href="/jobs/" class="btn btn-sm btn-outline-primary px-3">View All</a>
+                </div>
+                <div class="card-body p-4">
+                    {% if jobs %}
+                        {% for job in jobs %}
+                            <div class="job-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-dark">{{ job.title }}</strong>
+                                    <div class="text-muted small mt-1">
+                                        {{ job.company }} &bull; {{ job.location }} &bull; {{ job.job_type }}
+                                    </div>
+                                </div>
+                                <a href="/jobs/" class="btn btn-sm btn-outline-primary">Apply</a>
+                            </div>
+                            {% if not forloop.last %}
+                                <hr class="my-3 text-muted opacity-25">
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-briefcase fs-3 mb-2 d-block"></i>
+                            <span>No jobs available</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Mentorship -->
+        <div class="col-lg-6">
+            <div class="card h-100 shadow-sm border-light text-center">
+                <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center" style="min-height: 220px;">
+                    <div class="rounded-circle bg-light p-3 mb-3 text-primary" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h5 class="fw-bold">Upcoming Mentorship Sessions</h5>
+                    <p class="text-muted small px-md-5 mt-2 mb-4">
+                        You don't have any sessions booked right now. Mentors can help you with portfolio reviews and job preparation advice.
+                    </p>
+                    <a href="/alumni/" class="btn btn-primary px-4">
+                        Find a Mentor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-<div class="col-md-3 text-end">
-
-<img src="{% static 'images/default-profile.png' %}"
-class="profile-img">
-
-</div>
-
-</div>
-
-</div>
-
-
-<h4 class="mb-3">Quick Actions</h4>
-
-<div class="row g-4">
-
-<!-- Profile -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon blue">
-👤
-</div>
-
-<h5>My Profile</h5>
-
-<p>Manage your academic and personal details</p>
-
-<a href="/profile/" class="btn btn-outline-primary w-100">
-View Profile
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Alumni Directory -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon purple">
-🔎
-</div>
-
-<h5>Alumni Directory</h5>
-
-<p>Search and connect with alumni network</p>
-
-<a href="/alumni/" class="btn btn-outline-primary w-100">
-Browse
-</a>
-
-</div>
-
-</div>
-
-
-<!-- AI Recommendation -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon pink">
-✨
-</div>
-
-<h5>AI Recommendation</h5>
-
-<p>Get AI matched mentors based on skills</p>
-
-<a href="/ai-recommendations/" class="btn btn-outline-primary w-100">
-Get Matches
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Skill Gap -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon green">
-📊
-</div>
-
-<h5>Skill Gap Analyzer</h5>
-
-<p>Compare skills with industry standards</p>
-
-<a href="/skill-gap/" class="btn btn-outline-primary w-100">
-Analyze
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Resume Analyzer -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon orange">
-📄
-</div>
-
-<h5>Resume Analyzer</h5>
-
-<p>AI feedback on your resume</p>
-
-<a href="/resume-analyzer/" class="btn btn-outline-primary w-100">
-Upload
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Mentorship -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon pink">
-📅
-</div>
-
-<h5>Career Path</h5>
-
-<p>Book sessions with alumni mentors</p>
-
-<a href="{% url 'career_path' %}" class="btn btn-outline-primary w-100">
-View Career Path
-</a>
-</div>
-
-</div>
-
-
-<!-- Events & Jobs -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon cyan">
-💼
-</div>
-
-<h5>Events & Jobs</h5>
-
-<p>Latest opportunities and webinars</p>
-
-<a href="/jobs/" class="btn btn-outline-primary w-100">
-Explore
-</a>
-
-</div>
-
-</div>
-
-
-<!-- Messaging -->
-
-<div class="col-md-3">
-
-<div class="dashboard-card">
-
-<div class="icon dark">
-💬
-</div>
-
-<h5>Messages</h5>
-
-<p>Instant communication with alumni</p>
-
-<a href="/inbox/" class="btn btn-outline-primary w-100">
-Chat Now
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="row mt-5">
-
-<!-- Jobs Section -->
-
-<div class="col-md-6">
-
-<div class="dashboard-card">
-
-<h5 class="mb-3">Recommended Jobs</h5>
-
-<div class="job-item">
-
-<strong>Frontend Developer</strong><br>
-<span class="text-muted">Google • Remote</span>
-
-<a href="/jobs/" class="float-end">Apply</a>
-
-</div>
-
-<hr>
-
-<div class="job-item">
-
-<strong>Frontend Developer</strong><br>
-<span class="text-muted">Google • Remote</span>
-
-<a href="/jobs/" class="float-end">Apply</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- Mentorship -->
-
-<div class="col-md-6">
-
-<div class="dashboard-card text-center">
-
-<h5>Upcoming Mentorship Sessions</h5>
-
-<p class="text-muted mt-4">
-No upcoming sessions booked.
-</p>
-
-<a href="/alumni/" class="btn btn-primary">
-Find a Mentor
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

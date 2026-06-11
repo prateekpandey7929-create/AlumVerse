@@ -1,67 +1,75 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<div class="container py-4">
 
-<div class="container py-5">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+        <div>
+            <h2 class="mb-2 fw-bold text-dark"><i class="bi bi-briefcase-fill text-primary me-2"></i>Career Opportunities</h2>
+            <p class="text-muted mb-0" style="font-size: 15px;">
+                Explore verified jobs, internships, and webinar opportunities posted directly by IIST alumni.
+            </p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="/post-job/" class="btn btn-primary px-4 py-2 shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Post Opportunity
+            </a>
+        </div>
+    </div>
 
-<h1 class="mb-2 fw-bold">Opportunities</h1>
+    <!-- Jobs Grid -->
+    <div class="row g-4 mt-2">
+        {% for job in opportunities %}
+            <div class="col-lg-6">
+                <div class="card opportunity-card h-100 mb-0 d-flex flex-column">
+                    <div class="card-body p-4 flex-grow-1">
+                        
+                        <!-- Top header -->
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <h5 class="job-title mb-0 text-dark fw-bold">{{ job.title }}</h5>
+                            <span class="badge bg-primary py-1 px-3 text-uppercase" style="font-size: 10px; letter-spacing: 0.5px;">{{ job.type }}</span>
+                        </div>
 
-<p class="text-muted mb-4">
-Explore jobs, internships and events shared by alumni.
-</p>
+                        <!-- Company & Location -->
+                        <p class="company-location mb-3 fw-medium">
+                            <span class="text-primary"><i class="bi bi-building me-1"></i>{{ job.company }}</span>
+                            <span class="text-muted mx-2">&bull;</span>
+                            <span class="text-secondary"><i class="bi bi-geo-alt me-1"></i>{{ job.location }}</span>
+                        </p>
 
-<a href="/post-job/" class="btn btn-primary mb-4">
-Post Opportunity
-</a>
+                        <!-- Deadline -->
+                        <p class="deadline mb-3 small d-flex align-items-center">
+                            <i class="bi bi-calendar-x-fill me-1"></i> Apply Before: <span class="fw-semibold ms-1">{{ job.deadline }}</span>
+                        </p>
 
-<div class="row g-4">
+                        <!-- Description -->
+                        <p class="description mb-0 text-secondary" style="font-size: 14px; white-space: pre-line;">
+                            {{ job.description }}
+                        </p>
 
-{% for job in opportunities %}
+                    </div>
 
-<div class="col-md-6">
-
-<div class="card opportunity-card shadow-sm">
-
-<div class="card-body">
-
-<div class="d-flex justify-content-between align-items-start">
-
-<h5 class="card-title mb-1">{{ job.title }}</h5>
-
-<span class="badge bg-primary">
-{{ job.type }}
-</span>
+                    <!-- Card Actions -->
+                    <div class="card-footer bg-white border-top p-4 mt-auto">
+                        <a href="mailto:alumni@iist.ac.in?subject=Application for {{ job.title }} at {{ job.company }}" class="btn btn-primary btn-sm px-4">
+                            <i class="bi bi-send-fill me-1"></i> Apply Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="rounded-circle bg-light p-3 mx-auto mb-3 text-muted" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <h5 class="fw-bold">No Opportunities Yet</h5>
+                <p class="text-muted small">No jobs or internships have been posted. Be the first to share an opportunity!</p>
+                <a href="/post-job/" class="btn btn-primary mt-3 px-4">Post Opportunity</a>
+            </div>
+        {% endfor %}
+    </div>
 
 </div>
-
-<p class="text-muted mb-2">
-
-<strong>{{ job.company }}</strong> • {{ job.location }}
-
-</p>
-
-<p class="mb-2 text-secondary">
-
-Deadline: {{ job.deadline }}
-
-</p>
-
-<p class="card-text">
-
-{{ job.description }}
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
 {% endblock %}

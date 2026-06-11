@@ -4,300 +4,367 @@
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>AlumVerse | IIST Alumni Network</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AlumVerse | IIST Alumni Network</title>
+    
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
-
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-
-<div class="container">
-
-<!-- LEFT SIDE -->
-
-<a class="navbar-brand d-flex align-items-center" href="/">
-
-<img src="{% static 'images/iist_logo.png' %}" height="40" class="me-3">
-
-<div>
-
-<h5 class="mb-0 fw-bold">AlumVerse</h5>
-
-<small class="text-muted">
-Indore Institute of Science & Technology <br>
-Affiliated to - RGPV (Bhopal) & Approved by - AICTE (New Delhi)
-</small>
-
-</div>
-
-</a>
-
-<!-- MOBILE BUTTON -->
-
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-
-<span class="navbar-toggler-icon"></span>
-
-</button>
-
-
-<div class="collapse navbar-collapse" id="navbarNav">
-
-<ul class="navbar-nav ms-auto align-items-center">
-
-<!-- USER NOT LOGGED IN -->
-
-{% if not user.is_authenticated %}
-
-{% if request.path == '/' %}
-
-<li class="nav-item ms-2">
-<a href="/alumni-request/" class="btn btn-warning">Request Alumni Access</a>
-</li>
-
-<li class="nav-item ms-2">
-<a class="btn btn-primary" href="/login/">Login</a>
-</li>
-
-<li class="nav-item ms-2">
-<a class="btn btn-success" href="/register/">Register</a>
-</li>
-
-{% elif request.path == '/login/' %}
-
-<li class="nav-item">
-<a class="nav-link" href="/">Home</a>
-</li>
-
-<li class="nav-item ms-2">
-<a class="btn btn-success" href="/register/">Register</a>
-</li>
-
-{% elif request.path == '/register/' %}
-
-<li class="nav-item">
-<a class="nav-link" href="/">Home</a>
-</li>
-
-<li class="nav-item ms-2">
-<a class="btn btn-primary" href="/login/">Login</a>
-</li>
-
-{% endif %}
-
-{% endif %}
-
-
-
-<!-- USER LOGGED IN -->
-
-{% if user.is_authenticated %}
-
-<li class="nav-item">
-<a class="nav-link" href="/">Home</a>
-</li>
-
-<!-- SHOW DASHBOARD ONLY FOR STUDENT & ALUMNI -->
-
-{% if not user.is_staff %}
-
-<li class="nav-item ms-2">
-<a class="btn btn-primary" href="/dashboard/">
-Dashboard
-</a>
-</li>
-
-{% endif %}
-
-<li class="nav-item ms-2">
-<a class="btn btn-danger" href="/logout/">
-Logout
-</a>
-</li>
-
-{% endif %}
-
-
-</ul>
-</div>
-
-</div>
-
-</nav>
-
-
-<!-- ================= PAGE CONTENT ================= -->
-
-{% block content %}
-
-{% endblock %}
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer class="mt-0 pt-5 pb-3" style="background:#f1f3f5;">
-
-<div class="container">
-
-<div class="row">
-
-
-<div class="col-md-4">
-
-<h5 class="fw-bold">AlumVerse</h5>
-
-<p class="text-muted">
-Connecting IIST students with alumni to foster mentorship,
-career growth and lifelong relationships.
-</p>
-
-</div>
-
-
-<div class="col-md-3">
-
-<h5 class="fw-bold">Quick Links</h5>
-
-<ul class="list-unstyled">
-
-<li><a href="/" class="text-decoration-none text-dark">Home</a></li>
-
-<li><a href="/about/" class="text-decoration-none text-dark">About US</a></li>
-
-<li><a href="/contact/" class="text-decoration-none text-dark">Contact US</a></li>
-
-<li><a href="/privacy/" class="text-decoration-none text-dark">Privacy Policy</a></li>
-
-<li><a href="/terms/" class="text-decoration-none text-dark">Terms of service</a></li>
-
-</ul>
-
-</div>
-
-
-<div class="col-md-3">
-
-<h5 class="fw-bold">Contact Us</h5>
-
-<p class="text-muted">
-
-Indore Institute of Science & Technology<br>
-
-Indore, Madhya Pradesh<br>
-
-📞 +91 XXXXX XXXXX<br>
-
-✉ alumni@iist.ac.in
-
-</p>
-
-</div>
-
-
-<div class="col-md-2">
-
-<h5 class="fw-bold">Follow Us</h5>
-
-<div class="d-flex gap-3 mt-3">
-
-<a href="#" class="text-dark fs-4">
-<i class="bi bi-facebook"></i>
-</a>
-
-<a href="#" class="text-dark fs-4">
-<i class="bi bi-twitter-x"></i>
-</a>
-
-<a href="#" class="text-dark fs-4">
-<i class="bi bi-linkedin"></i>
-</a>
-
-<a href="#" class="text-dark fs-4">
-<i class="bi bi-instagram"></i>
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<hr>
-
-<p class="text-center text-muted mb-0">
-
-© 2026 AlumVerse – IIST Alumni Network. All rights reserved.
-
-</p>
-
-</div>
-
-</footer>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Floating Chatbot Button -->
-
-<button onclick="toggleChat()" 
-style="position:fixed;bottom:20px;right:20px;
-background:#007bff;color:white;border:none;
-padding:12px 16px;border-radius:50%;">
-💬 </button>
-
-<!-- Chatbot Box -->
-
-<div id="chatbox" 
-style="display:none;position:fixed;bottom:80px;right:20px;
-width:300px;background:white;border:1px solid #ccc;
-border-radius:12px;padding:12px;box-shadow:0 5px 20px rgba(0,0,0,0.2);">
-
-<h6 class="fw-bold">AI Assistant</h6>
-
-<!-- RESPONSE AREA -->
-<div style="height:150px; overflow-y:auto; margin-bottom:10px; font-size:14px;">
-
-{% if request.session.chatbot_response %}
-<div class="p-2 mb-2" style="background:#f1f3f5; border-radius:8px;">
-<b>Bot:</b> {{ request.session.chatbot_response }}
-</div>
-{% endif %}
-
-</div>
-
-<!-- INPUT -->
-<form method="POST" action="/chatbot/">
-{% csrf_token %}
-<input type="text" name="query" class="form-control mb-2" placeholder="Ask something...">
-<button class="btn btn-primary w-100">Send</button>
-</form>
-
-</div>
-
-<script>
-
-function toggleChat(){
-    var box = document.getElementById("chatbox");
-    if(box.style.display === "none"){
-        box.style.display = "block";
-    } else {
-        box.style.display = "none";
-    }
-}
-
-</script>
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <!-- LEFT SIDE BRAND -->
+            <a class="navbar-brand" href="{% if user.is_authenticated %}/dashboard/{% else %}/{% endif %}">
+                <img src="{% static 'images/iist_logo.png' %}" height="42" class="me-3" alt="IIST Logo">
+                <div>
+                    <h5>AlumVerse</h5>
+                    <small>
+                        Indore Institute of Science & Technology <br>
+                        <span style="font-size: 10px; opacity: 0.85;">Affiliated to RGPV & Approved by AICTE</span>
+                    </small>
+                </div>
+            </a>
+
+            <!-- MOBILE TOGGLE BUTTON -->
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- RIGHT SIDE MENU -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                    
+                    <!-- USER NOT LOGGED IN -->
+                    {% if not user.is_authenticated %}
+                        {% if request.path == '/' %}
+                            <li class="nav-item">
+                                <a href="/alumni-request/" class="btn btn-warning shadow-sm">Request Alumni Access</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary shadow-sm" href="/login/">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-success shadow-sm" href="/register/">Register</a>
+                            </li>
+                        {% elif request.path == '/login/' %}
+                            <li class="nav-item">
+                                <a class="nav-link px-3 fw-medium" href="/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-success shadow-sm" href="/register/">Register</a>
+                            </li>
+                        {% elif request.path == '/register/' %}
+                            <li class="nav-item">
+                                <a class="nav-link px-3 fw-medium" href="/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary shadow-sm" href="/login/">Login</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- USER LOGGED IN -->
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'admin' or user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link px-3 fw-semibold text-primary" href="/dashboard/"><i class="bi bi-shield-lock-fill me-1"></i>Admin Dashboard</a>
+                            </li>
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-danger btn-sm px-3" href="/logout/"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <span class="text-muted small px-3 fw-medium">
+                                <i class="bi bi-circle-fill text-success me-1" style="font-size: 7px; vertical-align: middle;"></i>
+                                Logged in as: <b>{{ user.full_name|default:user.username }}</b>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ================= PAGE CONTENT & LAYOUT WRAPPER ================= -->
+    <main style="min-height: 75vh; background-color: var(--background);">
+        {% if user.is_authenticated and user.role != 'admin' %}
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Left Sidebar Panel -->
+                    <div class="col-xl-2 col-lg-3 col-md-4 p-0">
+                        <div class="sidebar-container shadow-sm">
+                            
+                            <!-- Profile Summary -->
+                            <div class="sidebar-brand-card">
+                                <img src="{{ user.profile.profile_photo_url }}" class="sidebar-brand-avatar" alt="Avatar">
+                                <div class="ms-3 overflow-hidden">
+                                    <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.full_name|default:user.username }}</h6>
+                                    <small class="text-muted text-uppercase" style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px;">
+                                        {% if user.role == "alumni" %}
+                                            Verified Alumni
+                                        {% elif user.role == "admin" %}
+                                            Administrator
+                                        {% else %}
+                                            Student Member
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Navigation links -->
+                            <ul class="sidebar-menu">
+                                <li>
+                                    <a href="/dashboard/" class="sidebar-link {% if request.path == '/dashboard/' %}active{% endif %}">
+                                        <i class="bi bi-grid-fill"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/profile/" class="sidebar-link {% if request.path == '/profile/' %}active{% endif %}">
+                                        <i class="bi bi-person-fill"></i>
+                                        <span>My Profile</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/alumni/" class="sidebar-link {% if '/alumni/' in request.path or '/alumni-profile/' in request.path or '/alumni-search/' in request.path %}active{% endif %}">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span>Alumni Directory</span>
+                                    </a>
+                                </li>
+                                <li class="mt-4 pt-3 border-top">
+                                    <a href="/logout/" class="sidebar-link logout-link">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                    <!-- Right Main Views -->
+                    <div class="col-xl-10 col-lg-9 col-md-8 py-4 px-md-4">
+        {% else %}
+            <!-- Standard Full Container View for Visitors & Admin -->
+            <div class="py-4 px-4 container">
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+        {% if user.is_authenticated and user.role != 'admin' %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            </div>
+        {% endif %}
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold mb-3" style="color: var(--primary);">AlumVerse</h5>
+                    <p class="text-muted pr-lg-4">
+                        Connecting IIST students with alumni to foster mentorship,
+                        career growth, and lifelong relationships. Powered by AI recommendation algorithms.
+                    </p>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">Quick Links</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="/" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 small"></i> Home</a></li>
+                        <li><a href="/about/" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 small"></i> About Us</a></li>
+                        <li><a href="/contact/" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 small"></i> Contact Us</a></li>
+                        <li><a href="/privacy/" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 small"></i> Privacy Policy</a></li>
+                        <li><a href="/terms/" class="text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 small"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="fw-bold mb-3">Contact Info</h5>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                        Indore Institute of Science & Technology,<br>Indore, Madhya Pradesh, India
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-telephone-fill text-primary me-2"></i>
+                        +91 XXXXX XXXXX
+                    </p>
+                    <p class="text-muted">
+                        <i class="bi bi-envelope-fill text-primary me-2"></i>
+                        alumni@iist.ac.in
+                    </p>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="fw-bold mb-3">Follow Us</h5>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="my-4" style="border-color: var(--border-color);">
+
+            <div class="row align-items-center">
+                <div class="col-md-12 text-center text-muted">
+                    <p class="mb-0">&copy; 2026 AlumVerse – IIST Alumni Network. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ================= FLOATING CHATBOT WIDGET ================= -->
+    
+    <!-- Floating Chatbot Button -->
+    <button onclick="toggleChat()" 
+        class="shadow-lg btn btn-primary rounded-circle d-flex align-items-center justify-content-center"
+        style="position: fixed; bottom: 25px; right: 25px; width: 56px; height: 56px; z-index: 9999; font-size: 22px; border: none;">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+
+    <!-- Chatbot Box -->
+    <div id="chatbox" class="card shadow-lg"
+        style="display: none; position: fixed; bottom: 95px; right: 25px; width: 320px; z-index: 9999; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color);">
+        
+        <!-- Header -->
+        <div class="p-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, var(--google-blue) 0%, #155cb0 100%);">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-robot me-2 fs-5"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold text-white">AlumVerse Assistant</h6>
+                    <small style="font-size: 11px; opacity: 0.8;">AI Chatbot</small>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="btn-close btn-close-white shadow-none" aria-label="Close"></button>
+        </div>
+
+        <!-- Dialog Body -->
+        <div id="chatbox-messages" class="p-3" style="height: 240px; overflow-y: auto; background-color: #f8f9fa;">
+            <div class="p-2.5 mb-2 bg-white rounded shadow-sm" style="font-size: 13px; border-left: 3px solid var(--primary); line-height: 1.4; word-break: break-word;">
+                Hello! I am your AI assistant. Ask me anything about career paths, resume analysis, or alumni directory search.
+            </div>
+        </div>
+
+        <!-- Input Form Footer -->
+        <div class="p-2 bg-white border-top">
+            <form id="chatbot-form" class="d-flex gap-1">
+                {% csrf_token %}
+                <input type="text" id="chatbot-input" name="query" class="form-control form-control-sm border-1 py-2" placeholder="Ask something..." required style="border-radius: 8px;">
+                <button type="submit" class="btn btn-primary btn-sm px-3" style="border-radius: 8px;">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleChat() {
+            var box = document.getElementById("chatbox");
+            if (box.style.display === "none") {
+                box.style.display = "block";
+                var msgs = document.getElementById("chatbox-messages");
+                msgs.scrollTop = msgs.scrollHeight;
+            } else {
+                box.style.display = "none";
+            }
+        }
+
+        document.getElementById("chatbot-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            var input = document.getElementById("chatbot-input");
+            var query = input.value.trim();
+            if (!query) return;
+
+            // Add user message to UI
+            var msgs = document.getElementById("chatbox-messages");
+            var userMsgHtml = `
+                <div class="p-2.5 mb-2 rounded shadow-sm text-end" style="background-color: var(--primary-bg); color: var(--primary); font-size: 13px; margin-left: 20px; word-break: break-word;">
+                    <strong>You:</strong> ${escapeHtml(query)}
+                </div>
+            `;
+            msgs.insertAdjacentHTML("beforeend", userMsgHtml);
+            msgs.scrollTop = msgs.scrollHeight;
+            
+            // Clear input
+            input.value = "";
+
+            // Send fetch request
+            var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            fetch('/chatbot/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: new URLSearchParams({
+                    'query': query
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botMsgHtml = `
+                    <div class="p-2.5 mb-2 bg-white rounded shadow-sm" style="font-size: 13px; border-left: 3px solid var(--primary); line-height: 1.4; word-break: break-word;">
+                        <strong>Bot:</strong> ${data.response}
+                    </div>
+                `;
+                msgs.insertAdjacentHTML("beforeend", botMsgHtml);
+                msgs.scrollTop = msgs.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                var errHtml = `
+                    <div class="p-2.5 mb-2 bg-danger-subtle rounded shadow-sm" style="font-size: 13px; border-left: 3px solid red; line-height: 1.4; color: red;">
+                        <strong>Bot:</strong> Sorry, there was an error processing your query. Please try again.
+                    </div>
+                `;
+                msgs.insertAdjacentHTML("beforeend", errHtml);
+                msgs.scrollTop = msgs.scrollHeight;
+            });
+        });
+
+        function escapeHtml(text) {
+            var map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+    </script>
 
 </body>
 

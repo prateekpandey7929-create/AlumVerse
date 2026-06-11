@@ -2,52 +2,58 @@
 {% load static %}
 
 {% block content %}
+<div class="container py-4">
 
-<div class="container py-5">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="mb-2 fw-bold text-dark"><i class="bi bi-chat-right-text text-primary me-2"></i>My Messages Inbox</h2>
+        <p class="text-muted mb-0" style="font-size: 15px;">
+            Keep track of your conversations and mentorship bookings with alumni or student peers.
+        </p>
+    </div>
 
-<h2 class="mb-2 fw-bold">Inbox</h2>
+    <!-- Conversations list -->
+    <div class="inbox-list mt-4">
+        <div class="row g-3">
+            {% for c in conversations %}
+                <div class="col-12">
+                    <a href="/messages/{{ c.user.id }}/" class="conversation-card card shadow-sm p-3">
+                        <div class="d-flex align-items-center w-100">
+                            
+                            <!-- Profile Photo -->
+                            <img src="{% static 'images/default-profile.png' %}" class="chat-avatar" alt="Avatar">
+                            
+                            <!-- Middle text -->
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <h6 class="mb-0 fw-bold text-dark">@{{ c.user.username }}</h6>
+                                    <small class="text-muted" style="font-size: 11px;">Active</small>
+                                </div>
+                                <p class="text-secondary mb-0 small text-truncate" style="max-width: 480px;">
+                                    {{ c.last_message|default:"No messages exchanged yet." }}
+                                </p>
+                            </div>
 
-<p class="text-muted mb-4">
-Your conversations with alumni and students.
-</p>
+                            <!-- Right arrow -->
+                            <div class="ms-3 text-muted">
+                                <i class="bi bi-chevron-right fs-5"></i>
+                            </div>
 
-<div class="row g-3">
-
-{% for c in conversations %}
-
-<div class="col-md-6">
-
-<a href="/messages/{{ c.user.id }}" class="conversation-card card shadow-sm">
-
-<div class="card-body">
-
-<div class="d-flex align-items-center">
-
-<img src="{% static 'images/default-profile.png' %}"
-class="chat-avatar">
-
-<div class="ms-3">
-
-<h6 class="mb-1">{{ c.user.username }}</h6>
-
-<p class="text-muted mb-0 small">
-{{ c.last_message }}
-</p>
+                        </div>
+                    </a>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5 bg-white rounded border">
+                    <div class="rounded-circle bg-light p-3 mx-auto mb-3 text-muted" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                        <i class="bi bi-chat-right-dots"></i>
+                    </div>
+                    <h5 class="fw-bold">No Conversations Yet</h5>
+                    <p class="text-muted small">Browse the alumni directory and select a mentor to start chatting.</p>
+                    <a href="/alumni/" class="btn btn-primary mt-3 px-4">Find a Mentor</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 </div>
-
-</div>
-
-</div>
-
-</a>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
 {% endblock %}

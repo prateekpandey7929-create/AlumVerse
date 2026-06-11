@@ -79,3 +79,29 @@ def send_message(request, user_id):
             "receiver": receiver
         }
     )
+
+
+# Community Group Chat View
+@login_required
+def community_chat(request):
+    from .models import CommunityMessage
+    
+    if request.method == "POST":
+        text = request.POST.get("message")
+        if text:
+            CommunityMessage.objects.create(
+                sender=request.user,
+                message=text
+            )
+        return redirect("/messages/community/")
+
+    # select_related to optimize query count (SOLID / DRY performance helper)
+    messages = CommunityMessage.objects.select_related("sender").order_by("created_at")
+    return render(
+        request,
+        "community_chat.html",
+        {
+            "messages": messages
+        }
+    )
+

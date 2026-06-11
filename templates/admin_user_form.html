@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0 p-4" style="border-radius: 12px;">
+                
+                <!-- Header -->
+                <div class="mb-4 pb-2 border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="fw-bold mb-0 text-dark">
+                            <i class="bi bi-person-gear text-primary me-2"></i>{{ action }} User
+                        </h3>
+                        <p class="text-muted small mb-0 mt-1">
+                            {% if action == 'Add' %}Create a new platform account under student, alumni, or administrator credentials.{% else %}Modify credentials for user account @{{ edit_user.username }}.{% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <a href="/dashboard/" class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 8px;">
+                            <i class="bi bi-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Messages / Form Validation Errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger shadow-sm border-0 mb-4" style="border-radius: 8px;">
+                        <strong class="d-block mb-2">Please fix the following errors:</strong>
+                        <ul class="mb-0 small">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><b>{{ field.label }}:</b> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Full Name</label>
+                            {{ form.full_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Email Address</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Enrollment / Scholar Number</label>
+                            {{ form.enrollment_no }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Branch / Department</label>
+                            {{ form.branch }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Admission Year</label>
+                            {{ form.admission_year }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Graduation Year</label>
+                            {{ form.graduation_year }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">System Role</label>
+                            {{ form.role }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary">Account Password</label>
+                            {{ form.password }}
+                            <div class="form-text text-muted small mt-1">
+                                {{ form.password.help_text }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Buttons -->
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <a href="/dashboard/" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 8px;">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm" style="border-radius: 8px;">
+                            <i class="bi bi-save me-1"></i> Save User
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

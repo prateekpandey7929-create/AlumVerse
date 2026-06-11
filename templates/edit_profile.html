@@ -2,164 +2,103 @@
 {% load static %}
 
 {% block content %}
-
 <div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="edit-profile-card">
+                
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-2">Edit Profile</h3>
+                    <p class="text-muted small">Update your personal, academic and professional information to show on your public profile</p>
+                </div>
 
-<div class="row justify-content-center">
+                <!-- Form -->
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <!-- Bio -->
+                        <div class="col-md-12">
+                            <label class="form-label">Biography</label>
+                            {{ form.bio }}
+                            <div class="form-text text-muted">A short summary of your background, experience, or student status.</div>
+                        </div>
 
-<div class="col-lg-8">
+                        <!-- Skills -->
+                        <div class="col-md-6">
+                            <label class="form-label">Skills</label>
+                            {{ form.skills }}
+                            <div class="form-text text-muted">Comma separated (e.g. Python, SQL, UI/UX).</div>
+                        </div>
 
-<div class="edit-profile-card">
+                        <!-- Projects -->
+                        <div class="col-md-6">
+                            <label class="form-label">Projects</label>
+                            {{ form.projects }}
+                        </div>
 
-<h3 class="text-center mb-4">Edit Profile</h3>
+                        <!-- Achievements -->
+                        <div class="col-md-12">
+                            <label class="form-label">Achievements</label>
+                            {{ form.achievements }}
+                        </div>
 
-<form method="POST" enctype="multipart/form-data">
+                        <!-- LinkedIn -->
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-linkedin text-primary me-1"></i> LinkedIn URL</label>
+                            {{ form.linkedin }}
+                        </div>
 
-{% csrf_token %}
+                        <!-- GitHub -->
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-github text-dark me-1"></i> GitHub URL</label>
+                            {{ form.github }}
+                        </div>
 
-<div class="row g-3">
+                        <!-- Portfolio -->
+                        <div class="col-md-4">
+                            <label class="form-label"><i class="bi bi-globe text-primary me-1"></i> Portfolio URL</label>
+                            {{ form.portfolio }}
+                        </div>
 
-<!-- Bio -->
+                        <!-- Company & Role -->
+                        <div class="col-md-5">
+                            <label class="form-label">Current Company</label>
+                            {{ form.company }}
+                        </div>
 
-<div class="col-md-6">
+                        <div class="col-md-5">
+                            <label class="form-label">Job Role / Designation</label>
+                            {{ form.job_role }}
+                        </div>
 
-<label class="form-label">Bio</label>
+                        <!-- Experience -->
+                        <div class="col-md-2">
+                            <label class="form-label">Experience (Yrs)</label>
+                            {{ form.experience }}
+                        </div>
 
-{{ form.bio }}
+                        <!-- Profile Photo -->
+                        <div class="col-md-12 mt-4">
+                            <div class="p-3 bg-light rounded border">
+                                <label class="form-label fw-bold mb-2">Profile Photo</label>
+                                {{ form.profile_photo }}
+                            </div>
+                        </div>
+                    </div>
 
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-center gap-3 mt-5">
+                        <a href="/profile/" class="btn btn-outline-primary px-4">Cancel</a>
+                        <button class="btn btn-success px-4">
+                            <i class="bi bi-check-circle me-1"></i> Update Profile
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-<!-- Skills -->
-
-<div class="col-md-6">
-
-<label class="form-label">Skills</label>
-
-{{ form.skills }}
-
-</div>
-
-
-<!-- Projects -->
-
-<div class="col-md-6">
-
-<label class="form-label">Projects</label>
-
-{{ form.projects }}
-
-</div>
-
-
-<!-- Achievements -->
-
-<div class="col-md-6">
-
-<label class="form-label">Achievements</label>
-
-{{ form.achievements }}
-
-</div>
-
-
-<!-- LinkedIn -->
-
-<div class="col-md-6">
-
-<label class="form-label">LinkedIn</label>
-
-{{ form.linkedin }}
-
-</div>
-
-
-<!-- GitHub -->
-
-<div class="col-md-6">
-
-<label class="form-label">GitHub</label>
-
-{{ form.github }}
-
-</div>
-
-
-<!-- Portfolio -->
-
-<div class="col-md-6">
-
-<label class="form-label">Portfolio</label>
-
-{{ form.portfolio }}
-
-</div>
-
-
-<!-- Company -->
-
-<div class="col-md-6">
-
-<label class="form-label">Company</label>
-
-{{ form.company }}
-
-</div>
-
-
-<!-- Job Role -->
-
-<div class="col-md-6">
-
-<label class="form-label">Job Role</label>
-
-{{ form.job_role }}
-
-</div>
-
-
-<!-- Experience -->
-
-<div class="col-md-6">
-
-<label class="form-label">Experience</label>
-
-{{ form.experience }}
-
-</div>
-
-
-<!-- Profile Photo -->
-
-<div class="col-md-12">
-
-<label class="form-label">Profile Photo</label>
-
-{{ form.profile_photo }}
-
-</div>
-
-</div>
-
-
-<div class="text-center mt-4">
-
-<button class="btn btn-success px-4">
-
-Update Profile
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
 {% endblock %}

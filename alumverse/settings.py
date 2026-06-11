@@ -138,7 +138,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
-# AUTH_PASSWORD_VALIDATORS = [
+# EMAIL_PASSWORD_VALIDATORS = [
 #    {
 #        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
 #    },
@@ -152,3 +152,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
 #    },
 # ]
+
+# =========================================
+# EMAIL CONFIGURATION (SMTP Settings)
+# =========================================
+# To send actual emails, configure these settings with your SMTP provider (e.g. Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'       # Replace with your actual email
+EMAIL_HOST_PASSWORD = 'your-app-password'      # Replace with your actual app password (NOT email password)
+DEFAULT_FROM_EMAIL = 'AlumVerse <your-email@gmail.com>'

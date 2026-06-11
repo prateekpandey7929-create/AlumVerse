@@ -7,7 +7,6 @@ from django.dispatch import receiver
 
 class User(AbstractUser):
 
-
     ROLE_CHOICES = (
         ('student', 'Student'),
         ('alumni', 'Alumni'),
@@ -15,17 +14,32 @@ class User(AbstractUser):
     )
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
-
+    full_name = models.CharField(max_length=200, blank=True, null=True)
+    enrollment_no = models.CharField(max_length=50, blank=True, null=True)
     branch = models.CharField(max_length=100, blank=True, null=True)
     admission_year = models.IntegerField(blank=True, null=True)
     graduation_year = models.IntegerField(blank=True, null=True)
+    personal_email = models.EmailField(blank=True, null=True, unique=True)
 
     def save(self, *args, **kwargs):
-
         current_year = datetime.now().year
 
         if self.graduation_year and current_year >= self.graduation_year:
             self.role = "alumni"
+
+        if self.personal_email == '':
+            self.personal_email = None
+
+        if not self.username and self.email:
+            prefix = self.email.split('@')[0]
+            username = prefix
+            count = 1
+            # Import dynamically to avoid circular references
+            from accounts.models import User as UserModel
+            while UserModel.objects.filter(username=username).exists():
+                username = f"{prefix}{count}"
+                count += 1
+            self.username = username
 
         super().save(*args, **kwargs)
 
@@ -60,6 +74,16 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    @property
+    def profile_photo_url(self):
+        if self.profile_photo and hasattr(self.profile_photo, 'url'):
+            try:
+                return self.profile_photo.url
+            except ValueError:
+                pass
+        return '/static/images/profile.png'
+
 
 
 @receiver(post_save, sender=User)

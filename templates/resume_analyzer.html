@@ -1,105 +1,141 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<h2 class="mb-2">AI Resume Analyzer</h2>
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="mb-2 fw-bold text-dark"><i class="bi bi-file-earmark-bar-graph text-primary me-2"></i>AI Resume Analyzer</h2>
+        <p class="text-muted mb-0" style="font-size: 15px;">
+            Upload your resume in PDF format to calculate your ATS compatibility score and extract missing key terms.
+        </p>
+    </div>
 
-<p class="text-muted mb-4">
-Upload your resume and check your ATS compatibility.
-</p>
+    <!-- Upload Card -->
+    <div class="resume-card mb-5">
+        <form method="POST" enctype="multipart/form-data">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                        <div>{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
+            {% csrf_token %}
 
-<div class="resume-card">
+            <!-- Target Career Selection -->
+            <div class="mb-3">
+                <label class="form-label fw-bold mb-2">Target Career Path</label>
+                <select name="career" class="form-select border-1 py-2" required>
+                    <option value="Backend Developer" {% if selected_career == "Backend Developer" %}selected{% endif %}>Backend Developer</option>
+                    <option value="Data Scientist" {% if selected_career == "Data Scientist" %}selected{% endif %}>Data Scientist</option>
+                    <option value="Frontend Developer" {% if selected_career == "Frontend Developer" %}selected{% endif %}>Frontend Developer</option>
+                    <option value="DevOps Engineer" {% if selected_career == "DevOps Engineer" %}selected{% endif %}>DevOps Engineer</option>
+                    <option value="Mobile App Developer" {% if selected_career == "Mobile App Developer" %}selected{% endif %}>Mobile App Developer</option>
+                    <option value="UI/UX Designer" {% if selected_career == "UI/UX Designer" %}selected{% endif %}>UI/UX Designer</option>
+                    <option value="Software Engineer" {% if selected_career == "Software Engineer" %}selected{% endif %}>Software Engineer</option>
+                </select>
+                <div class="form-text text-muted small mt-1">Select the track you are matching your resume against.</div>
+            </div>
 
-<form method="POST" enctype="multipart/form-data">
-{% if messages %}
+            <!-- File Upload -->
+            <div class="mb-4">
+                <label class="form-label fw-bold mb-2">Select Resume (PDF Only)</label>
+                <div class="p-4 bg-light rounded text-center border border-dashed border-secondary d-flex flex-column align-items-center justify-content-center" style="border-style: dashed !important;">
+                    <i class="bi bi-cloud-arrow-up-fill text-muted fs-1 mb-2"></i>
+                    <input type="file" name="resume" class="form-control mt-2 border-1 bg-white" required>
+                    <div class="form-text text-muted small mt-2">Max file size: 5MB. Standard PDF format.</div>
+                </div>
+            </div>
 
-{% for message in messages %}
+            <button class="btn btn-primary w-100 py-2.5 shadow-sm">
+                <i class="bi bi-cpu me-1"></i> Analyze Resume
+            </button>
+        </form>
+    </div>
 
-<div class="alert alert-danger">
-    {{ message }}
+    <!-- Results Section -->
+    {% if score %}
+        <div class="result-section mt-5">
+            <!-- Score Card -->
+            <div class="score-card mb-5">
+                <h4 class="fw-bold mb-1">ATS Compatibility Score</h4>
+                <p class="text-white opacity-75 small mb-2">Target role: {{ selected_career }}</p>
+                
+                <div class="score-number mb-3">
+                    {{ score }}%
+                </div>
+
+                <div class="progress mt-2" style="height: 12px;">
+                    <div class="progress-bar {% if score >= 80 %}bg-success{% elif score >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                         role="progressbar"
+                         style="width: {{ score }}%"
+                         aria-valuenow="{{ score }}"
+                         aria-valuemin="0"
+                         aria-valuemax="100">
+                    </div>
+                </div>
+                
+                <div class="text-white small mt-3" style="font-weight: 500;">
+                    {% if score >= 80 %}
+                        <i class="bi bi-check-circle-fill me-1"></i> Excellent compatibility! Your resume is highly optimized.
+                    {% elif score >= 50 %}
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> Moderate compatibility. Incorporate the missing keywords below.
+                    {% else %}
+                        <i class="bi bi-x-circle-fill me-1"></i> Low compatibility. Restructure sections and expand experience details.
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Actionable Advice Card -->
+                <div class="col-md-12">
+                    <div class="card p-4 shadow-sm border-light">
+                        <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-lightbulb-fill text-warning me-2"></i>Actionable Improvement Advice</h5>
+                        <ul class="list-group list-group-flush mb-0">
+                            {% for tip in advice %}
+                                <li class="list-group-item bg-transparent border-0 px-0 py-2 text-secondary d-flex align-items-start gap-2" style="font-size: 14.5px;">
+                                    <i class="bi bi-arrow-right-circle-fill text-primary mt-1 flex-shrink-0" style="font-size: 13px;"></i>
+                                    <div>{{ tip }}</div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Found Keywords -->
+                <div class="col-lg-6 col-md-12">
+                    <div class="card p-4 shadow-sm border-light h-100">
+                        <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-check-circle-fill text-success me-2"></i>Matched Technical Terms</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for tag in found %}
+                                <span class="badge bg-success px-2.5 py-1.5"><i class="bi bi-check-lg me-1"></i>{{ tag }}</span>
+                            {% empty %}
+                                <p class="text-muted small mb-0">No target skills matched in resume text.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Keywords -->
+                <div class="col-lg-6 col-md-12">
+                    <div class="card p-4 shadow-sm border-light h-100">
+                        <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-x-circle-fill text-danger me-2"></i>Missing Target Terms</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for tag in missing %}
+                                <span class="badge bg-danger px-2.5 py-1.5"><i class="bi bi-plus-lg me-1"></i>{{ tag }}</span>
+                            {% empty %}
+                                <p class="text-muted small mb-0"><i class="bi bi-emoji-smile text-success me-1"></i>All key target terms are present!</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 </div>
-{% endfor %}
-
-{% endif %}
-
-{% csrf_token %}
-
-<div class="mb-3">
-
-<label class="form-label">Upload Resume</label>
-
-<input type="file" name="resume" class="form-control">
-
-</div>
-
-<button class="btn btn-primary w-100">
-Analyze Resume
-</button>
-
-</form>
-
-</div>
-
-
-{% if score %}
-
-<div class="result-section mt-4">
-
-<div class="score-card">
-
-<h4>ATS Score</h4>
-
-<div class="score-number">
-{{ score }}%
-</div>
-
-<div class="progress mt-3">
-
-<div class="progress-bar bg-success"
-role="progressbar"
-style="width: {{ score }}%"
-aria-valuenow="{{ score }}"
-aria-valuemin="0"
-aria-valuemax="100">
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="mt-4">
-
-<h5 class="mb-3">Missing Keywords</h5>
-
-<div class="row">
-
-{% for k in missing %}
-
-<div class="col-md-4">
-
-<div class="keyword-card">
-
-⚡ {{ k }}
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-</div>
-
-{% endif %}
-
-</div>
-
 {% endblock %}

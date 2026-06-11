@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 p-4 p-md-5 animate__animated animate__fadeIn" style="border-radius: 16px; background: #ffffff;">
+                
+                <!-- Header -->
+                <div class="mb-4 pb-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h3 class="fw-bold mb-1 text-dark d-flex align-items-center">
+                            <span class="badge bg-success-subtle text-success me-2" style="border-radius: 8px; padding: 8px 12px;">
+                                <i class="bi bi-shield-check"></i>
+                            </span>
+                            Approve & Register Alumni
+                        </h3>
+                        <p class="text-muted small mb-0">
+                            Confirm credentials and assign a secure password to finalize the registration.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="/dashboard/" class="btn btn-sm btn-outline-secondary px-3 py-2 fw-semibold" style="border-radius: 8px; font-size: 13px;">
+                            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Alumni Details Card -->
+                <div class="p-4 rounded-4 mb-4" style="background-color: #f8f9fa; border: 1px solid rgba(0,0,0,0.05);">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-placeholder me-3 rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold fs-5" style="width: 46px; height: 46px;">
+                            {{ req.name|slice:":1" }}
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold text-dark">{{ req.name }}</h5>
+                            <span class="badge bg-secondary-subtle text-secondary small" style="font-size: 11px;">Alumni Applicant</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 pt-2">
+                        <div class="col-sm-6">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Email Address</small>
+                            <span class="text-dark fw-semibold" style="font-size: 14.5px;">{{ req.email }}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Scholar Number</small>
+                            <span class="text-dark fw-semibold font-monospace" style="font-size: 14.5px;">{{ req.scholar_no }}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Branch / Department</small>
+                            <span class="text-dark fw-semibold" style="font-size: 14.5px;">{{ req.branch }}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Graduation Year</small>
+                            <span class="text-dark fw-semibold" style="font-size: 14.5px;">{{ req.graduation_year }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Password Field -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold text-secondary mb-2" style="font-size: 14px;">Set Login Password</label>
+                        <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                            <input type="text" name="password" id="password" value="{{ password }}" class="form-control border-end-0 px-3 py-2.5 font-monospace" placeholder="Enter secure password" required style="font-size: 16px; border: 1px solid #ced4da;">
+                            <button class="btn btn-outline-primary px-3 fw-bold" type="button" onclick="generateRandomPassword()" style="border: 1px solid #ced4da; border-left: none;">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Generate
+                            </button>
+                        </div>
+                        <div class="form-text text-muted small mt-2 d-flex align-items-start gap-1">
+                            <i class="bi bi-info-circle-fill text-primary mt-0.5" style="font-size: 12px;"></i>
+                            <span>If a user account with this email already exists, their role will be upgraded to <strong>Alumni</strong> and their password updated. Otherwise, a new account will be automatically registered.</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions Buttons -->
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top">
+                        <a href="/dashboard/" class="btn btn-outline-secondary px-4 py-2.5 fw-semibold" style="border-radius: 8px;">Cancel</a>
+                        <button type="submit" class="btn btn-success px-4 py-2.5 fw-bold shadow-sm d-flex align-items-center" style="border-radius: 8px; background-color: #198754; border-color: #198754;">
+                            <i class="bi bi-check-circle-fill me-2"></i> Approve & Register Account
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Generator Script -->
+<script>
+    function generateRandomPassword() {
+        const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const lowercase = "abcdefghijklmnopqrstuvwxyz";
+        const numbers = "0123456789";
+        const special = "@#$!";
+        
+        let pass = "Alum@";
+        
+        // Add random character from each set
+        const allChars = uppercase + lowercase + numbers + special;
+        for (let i = 0; i < 4; i++) {
+            pass += allChars.charAt(Math.floor(Math.random() * allChars.length));
+        }
+        
+        document.getElementById('password').value = pass;
+    }
+</script>
+{% endblock %}

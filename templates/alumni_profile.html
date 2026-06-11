@@ -2,141 +2,132 @@
 {% load static %}
 
 {% block content %}
-
 <div class="container py-4">
 
-<!-- PROFILE HEADER -->
+    <!-- Back Button Link -->
+    <div class="mb-3">
+        <a href="/alumni/" class="text-decoration-none text-muted small fw-medium">
+            <i class="bi bi-arrow-left me-1"></i> Back to Directory
+        </a>
+    </div>
 
-<div class="profile-header mb-4">
+    <!-- PROFILE HEADER BANNER -->
+    <div class="profile-header mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8 d-flex flex-column flex-md-row align-items-center text-center text-md-start">
+                <img src="{{ profile.profile_photo_url }}" class="profile-avatar mb-3 mb-md-0" alt="Avatar">
+                <div class="ms-md-4">
+                    <h2 class="mb-1 text-white fw-bold">{{ profile.user.username }}</h2>
+                    <p class="text-light opacity-90 mb-3" style="font-size: 15px; font-weight: 500;">
+                        <i class="bi bi-briefcase me-1"></i> {{ profile.job_role|default:"Alumni Member" }}
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+                        {% if profile.company %}
+                            <span class="badge bg-light text-dark shadow-sm">
+                                <i class="bi bi-building me-1"></i> {{ profile.company }}
+                            </span>
+                        {% endif %}
+                        {% if profile.experience %}
+                            <span class="badge bg-light text-dark shadow-sm">
+                                <i class="bi bi-clock me-1"></i> {{ profile.experience }} yrs exp
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center text-md-end">
+                <a href="/messages/{{ profile.user.id }}/" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold">
+                    <i class="bi bi-chat-left-text-fill me-1"></i> Message Alumni
+                </a>
+            </div>
+        </div>
+    </div>
 
-<div class="row align-items-center">
+    <!-- Content Row -->
+    <div class="row g-4">
+        <!-- LEFT CONTENT SECTION -->
+        <div class="col-lg-8 col-md-12">
+            <!-- About Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-info-circle text-primary me-2"></i>About Professional</h4>
+                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                    {{ profile.bio|default:"No description provided yet." }}
+                </p>
+            </div>
 
-<div class="col-md-8 d-flex align-items-center">
+            <!-- Skills Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-puzzle text-primary me-2"></i>Verified Skills</h4>
+                {% if profile.skills %}
+                    <p class="text-secondary mb-0" style="font-size: 14.5px;">
+                        {{ profile.skills }}
+                    </p>
+                {% else %}
+                    <p class="text-muted small mb-0">No specific skills listed.</p>
+                {% endif %}
+            </div>
 
-{% if profile.profile_photo %}
-<img src="{{ profile.profile_photo.url }}" class="profile-avatar">
-{% else %}
-<img src="{% static 'images/default-profile.png' %}" class="profile-avatar">
-{% endif %}
+            <!-- Projects Card -->
+            <div class="profile-card">
+                <h4><i class="bi bi-kanban text-primary me-2"></i>Projects & Accomplishments</h4>
+                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                    {{ profile.projects|default:"No active project details declared." }}
+                </p>
+            </div>
 
-<div class="ms-4">
+            <!-- Job Experience Details -->
+            <div class="profile-card">
+                <h4><i class="bi bi-journal-check text-primary me-2"></i>Employment Experience</h4>
+                <div class="p-3 bg-light rounded" style="border-left: 4px solid var(--primary);">
+                    <h5 class="mb-1 fw-bold text-dark">{{ profile.job_role|default:"Alumni Member" }}</h5>
+                    <p class="mb-2 text-primary" style="font-weight: 500;">{{ profile.company|default:"Independent Contractor" }}</p>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-calendar3 me-1"></i> Cumulative Experience: {{ profile.experience|default:"0" }} years
+                    </p>
+                </div>
+            </div>
+        </div>
 
-<h2 class="mb-1">{{ profile.user.username }}</h2>
+        <!-- RIGHT METADATA SECTION -->
+        <div class="col-lg-4 col-md-12">
+            <!-- Contact Card -->
+            <div class="profile-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-envelope-at-fill text-primary me-2"></i>Contact Info</h5>
+                <div class="mb-3">
+                    <label class="form-label mb-0 text-muted small">Primary Email</label>
+                    <p class="mb-0 text-dark fw-medium">{{ profile.user.email }}</p>
+                </div>
+            </div>
 
-<p class="text-light mb-2">
-{{ profile.job_role }}
-</p>
+            <!-- Social Card -->
+            <div class="profile-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-link-45deg text-primary me-2"></i>Social Handles</h5>
+                <div class="d-flex flex-column gap-2 mt-2">
+                    {% if profile.linkedin %}
+                        <a href="{{ profile.linkedin }}" target="_blank" class="btn btn-outline-primary text-start w-100 py-2">
+                            <i class="bi bi-linkedin me-2"></i> LinkedIn Profile
+                        </a>
+                    {% endif %}
+                    
+                    {% if profile.github %}
+                        <a href="{{ profile.github }}" target="_blank" class="btn btn-outline-primary text-start w-100 py-2">
+                            <i class="bi bi-github me-2"></i> GitHub Repository
+                        </a>
+                    {% endif %}
 
-<span class="badge bg-light text-dark me-2">
-{{ profile.company }}
-</span>
+                    {% if profile.portfolio %}
+                        <a href="{{ profile.portfolio }}" target="_blank" class="btn btn-outline-primary text-start w-100 py-2">
+                            <i class="bi bi-globe me-2"></i> Personal Portfolio
+                        </a>
+                    {% endif %}
 
-<span class="badge bg-light text-dark">
-{{ profile.experience }} yrs experience
-</span>
-
-</div>
-
-</div>
-
-<div class="col-md-4 text-end">
-
-<a href="/messages/{{ profile.user.id }}/" class="btn btn-light">
-Message Alumni
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="row">
-
-<!-- LEFT SIDE -->
-
-<div class="col-md-8">
-
-<div class="profile-card">
-
-<h4>About</h4>
-
-<p>{{ profile.bio }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Skills</h4>
-
-<p>{{ profile.skills }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Projects</h4>
-
-<p>{{ profile.projects }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h4>Professional Experience</h4>
-
-<p>
-
-<b>{{ profile.job_role }}</b><br>
-
-{{ profile.company }}<br>
-
-{{ profile.experience }} years experience
-
-</p>
-
-</div>
-
-</div>
-
-
-<!-- RIGHT SIDE -->
-
-<div class="col-md-4">
-
-<div class="profile-card">
-
-<h5>Contact Information</h5>
-
-<p><b>Email:</b> {{ profile.user.email }}</p>
-
-</div>
-
-
-<div class="profile-card">
-
-<h5>Social Links</h5>
-
-<p>
-
-<a href="{{ profile.linkedin }}" target="_blank">LinkedIn</a><br>
-
-<a href="{{ profile.github }}" target="_blank">GitHub</a><br>
-
-<a href="{{ profile.portfolio }}" target="_blank">Portfolio</a>
-
-</p>
-
-</div>
+                    {% if not profile.linkedin and not profile.github and not profile.portfolio %}
+                        <p class="text-muted small mb-0">No external social connections provided.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-</div>
-
-</div>
-
 {% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="login-page" style="background-image: url('{% static 'images/login-bg.jpg' %}');">
+
+<div class="login-overlay">
+
+<div class="container d-flex justify-content-center align-items-center">
+
+<div class="login-box" style="max-width: 450px;">
+
+<div class="text-center mb-4">
+
+<div class="login-icon" style="font-size: 32px; background: rgba(var(--primary-rgb), 0.1); width: 70px; height: 70px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--primary);">
+✉️
+</div>
+
+<h2 class="mt-3 fw-bold">Verify Your Email</h2>
+
+<p class="text-muted">
+Enter the 6-digit verification code sent to <br>
+<span class="badge bg-light text-dark border p-2 mt-1">{{ email }}</span>
+</p>
+
+</div>
+
+<!-- ALERT MESSAGES -->
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if 'success' in message.tags %}alert-info{% else %}alert-danger{% endif %} shadow-sm">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="mb-4">
+
+<label class="form-label text-center d-block fw-semibold text-secondary">
+Enter 6-Digit OTP
+</label>
+
+<input
+type="text"
+name="otp"
+class="form-control text-center fs-3 py-2"
+placeholder="------"
+maxlength="6"
+required
+style="letter-spacing: 0.6rem; font-weight: bold; border-radius: 10px;"
+>
+
+</div>
+
+<button class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm" style="border-radius: 8px;">
+Verify & Complete Registration
+</button>
+
+</form>
+
+<p class="text-center mt-4 mb-0">
+Incorrect email address? <a href="/register/" class="text-decoration-none fw-semibold">Restart Sign Up</a>
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

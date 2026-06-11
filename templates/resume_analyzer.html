@@ -26,19 +26,11 @@
 
             {% csrf_token %}
 
-            <!-- Target Career Selection -->
+            <!-- Job Description Textarea -->
             <div class="mb-3">
-                <label class="form-label fw-bold mb-2">Target Career Path</label>
-                <select name="career" class="form-select border-1 py-2" required>
-                    <option value="Backend Developer" {% if selected_career == "Backend Developer" %}selected{% endif %}>Backend Developer</option>
-                    <option value="Data Scientist" {% if selected_career == "Data Scientist" %}selected{% endif %}>Data Scientist</option>
-                    <option value="Frontend Developer" {% if selected_career == "Frontend Developer" %}selected{% endif %}>Frontend Developer</option>
-                    <option value="DevOps Engineer" {% if selected_career == "DevOps Engineer" %}selected{% endif %}>DevOps Engineer</option>
-                    <option value="Mobile App Developer" {% if selected_career == "Mobile App Developer" %}selected{% endif %}>Mobile App Developer</option>
-                    <option value="UI/UX Designer" {% if selected_career == "UI/UX Designer" %}selected{% endif %}>UI/UX Designer</option>
-                    <option value="Software Engineer" {% if selected_career == "Software Engineer" %}selected{% endif %}>Software Engineer</option>
-                </select>
-                <div class="form-text text-muted small mt-1">Select the track you are matching your resume against.</div>
+                <label class="form-label fw-bold mb-2">Job Description (JD)</label>
+                <textarea name="jd_text" class="form-control border-1 py-2.5" rows="6" placeholder="Paste the Job Description (JD) here to analyze your resume's compatibility..." required>{{ jd_text }}</textarea>
+                <div class="form-text text-muted small mt-1">Paste the full job post details to calculate a custom semantic compatibility match.</div>
             </div>
 
             <!-- File Upload -->
@@ -63,7 +55,7 @@
             <!-- Score Card -->
             <div class="score-card mb-5">
                 <h4 class="fw-bold mb-1">ATS Compatibility Score</h4>
-                <p class="text-white opacity-75 small mb-2">Target role: {{ selected_career }}</p>
+                <p class="text-white opacity-75 small mb-2">Evaluated against custom Job Description (JD)</p>
                 
                 <div class="score-number mb-3">
                     {{ score }}%

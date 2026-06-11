@@ -20,7 +20,10 @@ verify_personal_email,
 admin_user_add,
 admin_user_edit,
 admin_user_delete,
-admin_approve_request
+admin_approve_request,
+change_password,
+forgot_password,
+forgot_password_verify
 )
 
 from alumni.views import (
@@ -89,12 +92,18 @@ urlpatterns = [
 
     path('logout/', user_logout),
 
+    path('forgot-password/', forgot_password),
+
+    path('forgot-password/verify/', forgot_password_verify),
+
 
     # ================= DASHBOARD =================
 
     path('dashboard/', dashboard),
 
     path('profile/', profile),
+
+    path('profile/change-password/', change_password),
 
     path('profile/add-personal-email/', add_personal_email),
 

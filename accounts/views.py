@@ -1,7 +1,8 @@
 import random
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
@@ -30,15 +31,35 @@ def register(request):
             # Django session can't serialize custom form types easily; extract cleaned data attributes
             request.session['temp_registration_data'] = registration_data
             
-            # Generate 6-digit mock verification code
+            # Generate 6-digit verification code
             otp_code = str(random.randint(100000, 999999))
             request.session['temp_registration_otp'] = otp_code
             
-            # Show simulated code in Django message context for direct local testing
-            messages.success(
-                request,
-                f"Simulated verification code sent to {registration_data['email']}: [ {otp_code} ]"
-            )
+            # Send actual email
+            email_sent = False
+            email = registration_data['email']
+            try:
+                send_mail(
+                    subject="AlumVerse Registration OTP",
+                    message=f"Hello {registration_data.get('full_name', 'Student')},\n\nYour registration OTP verification code for AlumVerse is: {otp_code}\n\nBest Regards,\nAlumVerse Team",
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'admin.alumverse@gmail.com'),
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+                email_sent = True
+            except Exception as e:
+                print(f"Error sending registration email: {e}")
+                
+            if email_sent:
+                messages.success(
+                    request,
+                    f"A verification OTP code has been sent to your email {email}. Please enter it below."
+                )
+            else:
+                messages.success(
+                    request,
+                    f"Simulated verification code sent to {email}: [ {otp_code} ]\n(Note: Setup correct credentials in settings.py to receive actual emails)"
+                )
             return redirect('/verify-otp/')
         else:
             messages.error(request, "Please correct the form validation errors below.")
@@ -325,10 +346,30 @@ def add_personal_email(request):
             request.session['pending_personal_email'] = email
             request.session['personal_email_otp'] = otp_code
             
-            messages.success(
-                request,
-                f"Simulated verification code sent to personal email {email}: [ {otp_code} ]"
-            )
+            # Send actual email
+            email_sent = False
+            try:
+                send_mail(
+                    subject="AlumVerse Personal Email Verification OTP",
+                    message=f"Hello {request.user.full_name or request.user.username},\n\nYour verification code to add personal email {email} to your AlumVerse profile is: {otp_code}\n\nBest Regards,\nAlumVerse Team",
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'admin.alumverse@gmail.com'),
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+                email_sent = True
+            except Exception as e:
+                print(f"Error sending personal email verification code: {e}")
+                
+            if email_sent:
+                messages.success(
+                    request,
+                    f"A verification OTP code has been sent to your personal email {email}. Please enter it below."
+                )
+            else:
+                messages.success(
+                    request,
+                    f"Simulated verification code sent to personal email {email}: [ {otp_code} ]\n(Note: Setup correct credentials in settings.py to receive actual emails)"
+                )
             return redirect('/profile/verify-personal-email/')
         else:
             messages.error(request, "Please correct the validation errors below.")
@@ -573,3 +614,119 @@ def admin_approve_request(request, request_id):
             "req": req,
             "password": generated_password
         })
+
+
+@login_required
+def change_password(request):
+    """
+    Allows a user to securely change their password from their profile page.
+    """
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Keep user logged in
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('/profile/')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'change_password.html', {'form': form})
+
+
+def forgot_password(request):
+    """
+    Handles initiation of password reset. Verification code is sent to user's registered or personal email.
+    """
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip().lower()
+        if not email:
+            messages.error(request, "Please enter your email address.")
+            return render(request, "forgot_password.html")
+            
+        # Find user by registered email or personal email
+        user = User.objects.filter(Q(email=email) | Q(personal_email=email)).first()
+        if not user:
+            messages.error(request, "No account matches this email address.")
+            return render(request, "forgot_password.html")
+            
+        # Generate 6-digit OTP code
+        otp_code = str(random.randint(100000, 999999))
+        
+        # Save email and OTP to session
+        request.session['forgot_password_email'] = email
+        request.session['forgot_password_otp'] = otp_code
+        
+        # Send actual email
+        email_sent = False
+        target_email = user.email if email == user.email else user.personal_email
+        try:
+            send_mail(
+                subject="AlumVerse Password Reset OTP",
+                message=f"Hello {user.full_name or user.username},\n\nYour OTP verification code to reset your AlumVerse password is: {otp_code}\n\nBest Regards,\nAlumVerse Team",
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'admin.alumverse@gmail.com'),
+                recipient_list=[target_email],
+                fail_silently=False,
+            )
+            email_sent = True
+        except Exception as e:
+            print(f"Error sending forgot password OTP: {e}")
+            
+        if email_sent:
+            messages.success(
+                request,
+                f"A password reset OTP has been sent to your email {target_email}. Please verify below."
+            )
+        else:
+            messages.success(
+                request,
+                f"Simulated verification code sent to {target_email}: [ {otp_code} ]\n(Note: Setup correct credentials in settings.py to receive actual emails)"
+            )
+            
+        return redirect('/forgot-password/verify/')
+        
+    return render(request, "forgot_password.html")
+
+
+def forgot_password_verify(request):
+    """
+    Checks verification OTP and updates user password.
+    """
+    email = request.session.get('forgot_password_email')
+    otp_code = request.session.get('forgot_password_otp')
+    
+    if not email or not otp_code:
+        messages.error(request, "No pending password reset request found.")
+        return redirect('/forgot-password/')
+        
+    if request.method == "POST":
+        user_otp = request.POST.get('otp', '').strip()
+        new_password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+        
+        if user_otp != otp_code:
+            messages.error(request, "Invalid verification code. Please try again.")
+            return render(request, "forgot_password_verify.html", {"email": email})
+            
+        if not new_password or new_password != confirm_password:
+            messages.error(request, "Passwords do not match or are empty.")
+            return render(request, "forgot_password_verify.html", {"email": email})
+            
+        # Update user's password
+        user = User.objects.filter(Q(email=email) | Q(personal_email=email)).first()
+        if user:
+            user.set_password(new_password)
+            user.save()
+            
+            # Clean session variables
+            del request.session['forgot_password_email']
+            del request.session['forgot_password_otp']
+            
+            messages.success(request, "Your password has been reset successfully! Please login with your new credentials.")
+            return redirect('/login/')
+        else:
+            messages.error(request, "An error occurred. User not found.")
+            return redirect('/forgot-password/')
+            
+    return render(request, "forgot_password_verify.html", {"email": email})

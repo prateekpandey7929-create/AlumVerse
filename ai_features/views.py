@@ -36,18 +36,18 @@ def career_path(request):
 @login_required
 def resume_analyzer(request):
     """
-    Analyzes uploaded PDF resume against a selected target career track,
+    Analyzes uploaded PDF resume against a pasted Job Description (JD),
     returning ATS score, missing items, found items, and layout advice.
     """
     score = None
     missing = []
     found = []
     advice = []
-    selected_career = "Backend Developer"
+    jd_text = ""
 
     if request.method == "POST":
         file = request.FILES.get("resume")
-        selected_career = request.POST.get("career", "Backend Developer")
+        jd_text = request.POST.get("jd_text", "").strip()
 
         if not file:
             messages.error(request, "Please upload a resume file")
@@ -57,9 +57,13 @@ def resume_analyzer(request):
             messages.error(request, "Only PDF format documents are supported")
             return redirect("/resume-analyzer/")
 
+        if not jd_text:
+            messages.error(request, "Please enter the Job Description (JD) text")
+            return redirect("/resume-analyzer/")
+
         try:
             from .resume_analyzer import analyze_resume as analyze_resume_function
-            score, missing, found, advice = analyze_resume_function(file, selected_career)
+            score, missing, found, advice = analyze_resume_function(file, jd_text)
         except Exception as e:
             print(f"Error during resume analysis: {e}")
             messages.error(request, "Invalid or corrupted PDF file uploaded")
@@ -70,7 +74,7 @@ def resume_analyzer(request):
         "missing": missing,
         "found": found,
         "advice": advice,
-        "selected_career": selected_career
+        "jd_text": jd_text
     })
 
 @login_required

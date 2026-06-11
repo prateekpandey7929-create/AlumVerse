@@ -18,14 +18,32 @@
             {% csrf_token %}
             
             <div class="mb-4">
-                <label class="form-label fw-bold mb-2">Select Target Career</label>
-                <select name="career" class="form-select border-1 py-2.5">
-                    <option {% if request.POST.career == "Backend Developer" %}selected{% endif %}>Backend Developer</option>
-                    <option {% if request.POST.career == "Data Scientist" %}selected{% endif %}>Data Scientist</option>
-                    <option {% if request.POST.career == "Frontend Developer" %}selected{% endif %}>Frontend Developer</option>
-                </select>
+                <label class="form-label fw-bold mb-2">Target Career Goal</label>
+                <input type="text" name="career" class="form-control border-1 py-2.5" list="career-suggestions" placeholder="Type your career goal (e.g. Cloud Architect, ML Engineer, UI/UX Designer...)" value="{{ selected_career }}" required style="border-radius: 8px;">
+                <datalist id="career-suggestions">
+                    <option value="Backend Developer">
+                    <option value="Frontend Developer">
+                    <option value="Fullstack Developer">
+                    <option value="Data Scientist">
+                    <option value="Data Engineer">
+                    <option value="DevOps Engineer">
+                    <option value="Cloud Architect">
+                    <option value="Mobile App Developer">
+                    <option value="Android Developer">
+                    <option value="iOS Developer">
+                    <option value="UI/UX Designer">
+                    <option value="Software Engineer">
+                    <option value="QA Engineer">
+                    <option value="Machine Learning Engineer">
+                    <option value="Cybersecurity Analyst">
+                    <option value="Database Administrator">
+                    <option value="Network Engineer">
+                    <option value="Product Manager">
+                    <option value="Embedded Systems Engineer">
+                    <option value="Blockchain Developer">
+                </datalist>
                 <div class="form-text text-muted small mt-1">
-                    AI will query real-time market standards for this engineering track.
+                    Enter any engineering role. AI will match it dynamically and compute the necessary skill requirements.
                 </div>
             </div>
 

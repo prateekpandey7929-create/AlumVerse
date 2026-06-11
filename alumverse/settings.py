@@ -162,5 +162,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'admin.alumverse@gmail.com'       # Replace with your actual email
-EMAIL_HOST_PASSWORD = 'your-app-password'      # Replace with your actual app password (NOT email password)
-DEFAULT_FROM_EMAIL = 'AlumVerse <admin.alumverse@gmail.com>'
+EMAIL_HOST_PASSWORD = 'Iptyqufpwanhjbhh'      # Replace with your actual app password (NOT email password)
+DEFAULT_FROM_EMAIL = 'AlumVerse <admin.alumverse@gmail.com>'

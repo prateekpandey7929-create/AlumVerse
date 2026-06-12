@@ -1,0 +1,4 @@
+ROLE: Data Scientist / Machine Learning Engineer
+========================================
+
+Seeking a Data Scientist to join our analytics team. Technical skills required: Python, Pandas, NumPy, Machine Learning, Scikit-Learn, SQL, Statistics, Tableau, TensorFlow, and PyTorch. Responsibilities include building predictive machine learning models, conducting exploratory data analysis, designing Tableau BI dashboards, and performing statistical significance tests. Experience in Deep Learning (TensorFlow/PyTorch/Keras) and NLP is highly preferred.

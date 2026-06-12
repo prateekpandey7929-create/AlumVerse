@@ -1,0 +1,4 @@
+ROLE: Frontend Engineer (React/TypeScript)
+========================================
+
+Join our design studio as a Frontend Engineer. Requirements: Expert in JavaScript, TypeScript, React, HTML5, CSS3, Tailwind CSS, Bootstrap, Git, Figma, and Webpack. You will design responsive user interfaces, translate Figma prototypes to pixel-perfect layouts, implement state management using Redux, and optimize frontend loading times. Passion for interactive web design and clean code is required.

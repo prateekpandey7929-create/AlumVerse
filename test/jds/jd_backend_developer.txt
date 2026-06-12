@@ -1,0 +1,4 @@
+ROLE: Senior Backend Developer (Python/Django)
+========================================
+
+We are looking for a Senior Backend Developer experienced in Python, Django, SQL, PostgreSQL, REST API, Git, Docker, and AWS. The ideal candidate will build high-performance microservices, optimize database queries in PostgreSQL, deploy containers in Docker, and maintain cloud infrastructure on AWS. Experience with caching systems like Redis and other Python web frameworks (Flask, FastAPI) is a plus.

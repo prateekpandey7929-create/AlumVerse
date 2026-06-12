@@ -1,0 +1,4 @@
+ROLE: Cloud DevOps & Platform Engineer
+========================================
+
+We have an open position for a DevOps Engineer. Core requirements: Docker, Kubernetes, AWS, Git, Jenkins, Terraform, Ansible, Linux, Bash, and CI/CD pipelines. The candidate will design infrastructure as code on AWS using Terraform, manage container orchestration with EKS/Kubernetes, write automation shell scripts (Bash/Linux), and implement automated build and deploy pipelines using Jenkins.

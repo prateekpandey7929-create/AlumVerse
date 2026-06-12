@@ -1,0 +1,4 @@
+ROLE: Mobile Application Developer (Flutter/iOS/Android)
+========================================
+
+We are hiring a Mobile Application Developer. Required skills: Flutter, React Native, Swift, Kotlin, Java, Dart, iOS, Android, Firebase, Git, and RESTful APIs. You will create cross-platform applications for iOS and Android, publish apps to stores, manage state, and set up cloud backend database triggers in Firebase. Experience with native iOS (Swift) and Android (Kotlin) development is a huge advantage.

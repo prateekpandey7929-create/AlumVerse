@@ -164,3 +164,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'admin.alumverse2025@gmail.com'       # Replace with your actual email
 EMAIL_HOST_PASSWORD = 'lptyqufpwanhjbhh'      # Replace with your actual app password (NOT email password)
 DEFAULT_FROM_EMAIL = 'AlumVerse <admin.alumverse2025@gmail.com>'
+
+# Redirect URL for @login_required decorator
+LOGIN_URL = '/login/'

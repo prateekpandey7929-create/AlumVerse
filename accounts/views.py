@@ -132,8 +132,8 @@ def user_login(request):
         password = request.POST.get("password")
         role = request.POST.get("role")
 
-        # Resolve unique user using email or personal_email parameters
-        user_obj = User.objects.filter(Q(email=email) | Q(personal_email=email)).first()
+        # Resolve unique user using email or personal_email parameters case-insensitively
+        user_obj = User.objects.filter(Q(email__iexact=email) | Q(personal_email__iexact=email)).first()
 
         if user_obj is None:
             messages.error(request, "No account matches this email address.")
@@ -148,27 +148,19 @@ def user_login(request):
 
         # Authorization Checks by user type selection
         if role == "admin":
-            if user.is_staff:
+            if user.is_staff or user.role == "admin":
                 login(request, user)
                 return redirect('/dashboard/')
             else:
                 messages.error(request, "You are not authorized as Admin.")
                 return redirect('/login/')
 
-        elif role == "student":
-            if user.role == "student":
+        elif role in ["student", "alumni"]:
+            if user.role in ["student", "alumni"]:
                 login(request, user)
                 return redirect('/dashboard/')
             else:
-                messages.error(request, "Account role check failed. Selection was Student.")
-                return redirect('/login/')
-
-        elif role == "alumni":
-            if user.role == "alumni":
-                login(request, user)
-                return redirect('/dashboard/')
-            else:
-                messages.error(request, "Account role check failed. Selection was Alumni.")
+                messages.error(request, f"Account role check failed. Selection was {role.capitalize()}.")
                 return redirect('/login/')
 
     return render(request, "login.html")
@@ -512,8 +504,8 @@ def admin_approve_request(request, request_id):
         req.is_approved = True
         req.save()
         
-        # Check if user exists by email
-        user = User.objects.filter(email=req.email).first()
+        # Check if user exists by email case-insensitively
+        user = User.objects.filter(email__iexact=req.email).first()
         is_new_user = False
         
         if user:
@@ -645,8 +637,8 @@ def forgot_password(request):
             messages.error(request, "Please enter your email address.")
             return render(request, "forgot_password.html")
             
-        # Find user by registered email or personal email
-        user = User.objects.filter(Q(email=email) | Q(personal_email=email)).first()
+        # Find user by registered email or personal email case-insensitively
+        user = User.objects.filter(Q(email__iexact=email) | Q(personal_email__iexact=email)).first()
         if not user:
             messages.error(request, "No account matches this email address.")
             return render(request, "forgot_password.html")
@@ -660,7 +652,7 @@ def forgot_password(request):
         
         # Send actual email
         email_sent = False
-        target_email = user.email if email == user.email else user.personal_email
+        target_email = user.email if email.lower() == (user.email or '').lower() else user.personal_email
         try:
             send_mail(
                 subject="AlumVerse Password Reset OTP",
@@ -713,8 +705,8 @@ def forgot_password_verify(request):
             messages.error(request, "Passwords do not match or are empty.")
             return render(request, "forgot_password_verify.html", {"email": email})
             
-        # Update user's password
-        user = User.objects.filter(Q(email=email) | Q(personal_email=email)).first()
+        # Update user's password case-insensitively
+        user = User.objects.filter(Q(email__iexact=email) | Q(personal_email__iexact=email)).first()
         if user:
             user.set_password(new_password)
             user.save()

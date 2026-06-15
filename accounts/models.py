@@ -27,18 +27,34 @@ class User(AbstractUser):
         if self.graduation_year and current_year >= self.graduation_year:
             self.role = "alumni"
 
-        if self.personal_email == '':
+        if self.email:
+            self.email = self.email.strip().lower()
+
+        if self.personal_email:
+            self.personal_email = self.personal_email.strip().lower()
+        else:
             self.personal_email = None
 
         if not self.username and self.email:
-            prefix = self.email.split('@')[0]
+            self.username = self.email.split('@')[0]
+
+        if self.username:
+            prefix = self.username
             username = prefix
             count = 1
             # Import dynamically to avoid circular references
             from accounts.models import User as UserModel
-            while UserModel.objects.filter(username=username).exists():
+            
+            qs = UserModel.objects.filter(username=username)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+                
+            while qs.exists():
                 username = f"{prefix}{count}"
                 count += 1
+                qs = UserModel.objects.filter(username=username)
+                if self.pk:
+                    qs = qs.exclude(pk=self.pk)
             self.username = username
 
         super().save(*args, **kwargs)

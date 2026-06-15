@@ -115,3 +115,36 @@ class UserAuthTests(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, "/dashboard/")
+
+    def test_admin_approve_request_self_healing(self):
+        """
+        Tests that approving an already approved AlumniRequest where user doesn't exist
+        is allowed (self-healing mechanism).
+        """
+        req = AlumniRequest.objects.create(
+            name="Ruturaj Sharma",
+            email="ruturaj123@gmail.com",
+            scholar_no="12345",
+            branch="CSE",
+            graduation_year=2024,
+            is_approved=True
+        )
+        
+        admin = User.objects.create_superuser(
+            username="admin",
+            email="admin@alumverse.com",
+            password="Password123!"
+        )
+        self.client.login(username="admin", password="Password123!")
+        
+        response = self.client.get(f"/admin-dashboard/approve-request/{req.id}/")
+        self.assertEqual(response.status_code, 200)
+        
+        response = self.client.post(f"/admin-dashboard/approve-request/{req.id}/", {
+            "password": "NewAlumPassword123"
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/dashboard/")
+        
+        user_exists = User.objects.filter(email="ruturaj123@gmail.com").exists()
+        self.assertTrue(user_exists)

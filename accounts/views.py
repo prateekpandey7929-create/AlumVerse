@@ -490,7 +490,9 @@ def admin_approve_request(request, request_id):
     """
     req = get_object_or_404(AlumniRequest, id=request_id)
     
-    if req.is_approved:
+    # Check if the user exists for this request
+    user_exists = User.objects.filter(email__iexact=req.email).exists()
+    if req.is_approved and user_exists:
         messages.info(request, f"Request for {req.name} has already been approved.")
         return redirect('/dashboard/')
 

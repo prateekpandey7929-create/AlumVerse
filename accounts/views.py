@@ -555,7 +555,11 @@ def admin_approve_request(request, request_id):
     Approves pending alumni access requests. Displays form to create/edit password,
     creates/updates user account, and sends/simulates email notification.
     """
-    req = get_object_or_404(AlumniRequest, id=request_id)
+    try:
+        req = AlumniRequest.objects.get(id=request_id)
+    except AlumniRequest.DoesNotExist:
+        messages.warning(request, "This request has already been processed or does not exist.")
+        return redirect('/dashboard/')
     
     # Check if the user exists for this request
     user_exists = User.objects.filter(email__iexact=req.email).exists()
@@ -675,6 +679,53 @@ def admin_approve_request(request, request_id):
             "req": req,
             "password": generated_password
         })
+
+
+@login_required
+@admin_required
+def admin_reject_request(request, request_id):
+    """
+    Rejects and deletes a pending alumni access request.
+    """
+    try:
+        req = AlumniRequest.objects.get(id=request_id)
+    except AlumniRequest.DoesNotExist:
+        messages.warning(request, "This request has already been processed or does not exist.")
+        return redirect('/dashboard/')
+    name = req.name
+    email = req.email
+    req.delete()
+    
+    # Try to send a rejection email notification
+    subject = "AlumVerse Verification Request Declined"
+    email_body = (
+        f"Hello {name},\n\n"
+        f"Thank you for your interest in joining the AlumVerse platform.\n\n"
+        f"Unfortunately, your alumni verification request could not be approved at this time because we were unable to verify your graduation records with the provided details.\n\n"
+        f"If you believe this is a mistake, please submit a new request with correct details.\n\n"
+        f"Best Regards,\n"
+        f"AlumVerse Admin Team"
+    )
+    
+    email_sent = False
+    try:
+        send_mail(
+            subject=subject,
+            message=email_body,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@alumverse.com'),
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        email_sent = True
+    except Exception as e:
+        print(f"Error sending rejection email: {e}")
+        
+    if email_sent:
+        messages.success(request, f"Alumni request for {name} rejected and email notification sent.")
+    else:
+        messages.success(request, f"Alumni request for {name} rejected (failed to send email notification).")
+        
+    return redirect('/dashboard/')
 
 
 @login_required

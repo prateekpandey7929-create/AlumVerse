@@ -151,6 +151,60 @@ class UserAuthTests(TestCase):
         user_exists = User.objects.filter(email="ruturaj123@gmail.com").exists()
         self.assertTrue(user_exists)
 
+    def test_admin_reject_request(self):
+        """
+        Tests that rejecting a request deletes it and redirects back to dashboard.
+        """
+        req = AlumniRequest.objects.create(
+            name="Reject Candidate",
+            email="rejectme@gmail.com",
+            scholar_no="99999",
+            branch="ME",
+            graduation_year=2023,
+            is_approved=False
+        )
+        admin = User.objects.create_superuser(
+            username="admin_reject_test",
+            email="admin_reject_test@alumverse.com",
+            password="Password123!"
+        )
+        self.client.login(username="admin_reject_test", password="Password123!")
+        
+        response = self.client.get(f"/admin-dashboard/reject-request/{req.id}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/dashboard/")
+        
+        # Check request is deleted
+        self.assertFalse(AlumniRequest.objects.filter(id=req.id).exists())
+
+    def test_admin_reject_nonexistent_request(self):
+        """
+        Tests that rejecting a request ID that doesn't exist redirects to dashboard with a warning.
+        """
+        admin = User.objects.create_superuser(
+            username="admin_reject_nonexist",
+            email="admin_reject_nonexist@alumverse.com",
+            password="Password123!"
+        )
+        self.client.login(username="admin_reject_nonexist", password="Password123!")
+        response = self.client.get("/admin-dashboard/reject-request/99999/")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/dashboard/")
+
+    def test_admin_approve_nonexistent_request(self):
+        """
+        Tests that approving a request ID that doesn't exist redirects to dashboard with a warning.
+        """
+        admin = User.objects.create_superuser(
+            username="admin_approve_nonexist",
+            email="admin_approve_nonexist@alumverse.com",
+            password="Password123!"
+        )
+        self.client.login(username="admin_approve_nonexist", password="Password123!")
+        response = self.client.get("/admin-dashboard/approve-request/99999/")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/dashboard/")
+
     def test_alumni_id_card_view(self):
         """
         Tests that alumni_id_card view returns success for alumni but redirects student role.

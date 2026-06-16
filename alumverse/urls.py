@@ -22,6 +22,7 @@ admin_user_add,
 admin_user_edit,
 admin_user_delete,
 admin_approve_request,
+admin_reject_request,
 change_password,
 forgot_password,
 forgot_password_verify,
@@ -143,6 +144,7 @@ urlpatterns = [
     path('admin-dashboard/delete-user/<int:user_id>/', admin_user_delete),
 
     path('admin-dashboard/approve-request/<int:request_id>/', admin_approve_request),
+    path('admin-dashboard/reject-request/<int:request_id>/', admin_reject_request),
 
 
     # ================= ALUMNI =================

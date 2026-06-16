@@ -199,9 +199,14 @@
                                     <td><span class="badge bg-secondary-subtle text-secondary">{{ req.graduation_year }}</span></td>
                                     <td>{{ req.email }}</td>
                                     <td class="text-center pe-4">
-                                        <a href="/admin-dashboard/approve-request/{{ req.id }}/" class="btn btn-sm btn-success px-4 fw-semibold" style="border-radius: 6px;">
-                                            <i class="bi bi-check-lg me-1"></i>Approve & Upgrade
-                                        </a>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="/admin-dashboard/approve-request/{{ req.id }}/" class="btn btn-sm btn-success px-3 fw-semibold" style="border-radius: 6px;">
+                                                <i class="bi bi-check-lg me-1"></i>Approve
+                                            </a>
+                                            <a href="/admin-dashboard/reject-request/{{ req.id }}/" onclick="return confirm('Are you sure you want to reject this verification request for {{ req.name }}? This will decline their request and notify them via email.')" class="btn btn-sm btn-outline-danger px-3 fw-semibold" style="border-radius: 6px;">
+                                                <i class="bi bi-x-lg me-1"></i>Reject
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             {% empty %}

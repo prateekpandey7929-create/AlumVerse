@@ -179,3 +179,132 @@ class UserAuthTests(TestCase):
         response = self.client.get("/profile/id-card/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Digital Alumni ID Card")
+
+class CommunityFeedAndAITests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.student = User.objects.create_user(
+            username="stu_feed",
+            email="stu_feed@indoreinstitute.com",
+            password="Password123!",
+            role="student"
+        )
+        self.client.login(username="stu_feed", password="Password123!")
+
+    def test_create_valid_post(self):
+        """
+        Tests posting a valid message to the community feed.
+        """
+        from accounts.models import Post
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "Hello AlumVerse! Looking forward to networking.",
+            "category": "general"
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/dashboard/")
+        
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertEqual(post.author, self.student)
+        self.assertEqual(post.category, "general")
+        self.assertIn("Hello AlumVerse!", post.content)
+
+    def test_create_moderated_post(self):
+        """
+        Tests that posts containing profane words are blocked.
+        """
+        from accounts.models import Post
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "This post is a complete scam and spam.",
+            "category": "general"
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify no post was created in the database
+        self.assertEqual(Post.objects.count(), 0)
+
+    def test_auto_tagging_internship(self):
+        """
+        Tests that writing 'internship' auto-appends '#Internship'.
+        """
+        from accounts.models import Post
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "We have an open internship at our company.",
+            "category": "internship"
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertIn("#Internship", post.content)
+
+    def test_auto_tagging_job(self):
+        """
+        Tests that writing 'job opening' auto-appends '#JobAlert' and '#Placement'.
+        """
+        from accounts.models import Post
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "There is a new job opening for developers.",
+            "category": "job_alert"
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertIn("#JobAlert", post.content)
+        self.assertIn("#Placement", post.content)
+
+    def test_post_with_multiple_images(self):
+        """
+        Tests posting a message along with multiple images.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from accounts.models import Post, PostImage
+        
+        img1 = SimpleUploadedFile("image1.jpg", b"file_content_1", content_type="image/jpeg")
+        img2 = SimpleUploadedFile("image2.png", b"file_content_2", content_type="image/png")
+        
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "Look at my new office space!",
+            "category": "general",
+            "images": [img1, img2]
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertEqual(post.images.count(), 2)
+
+    def test_delete_post_success(self):
+        """
+        Tests that a user can delete their own post.
+        """
+        from accounts.models import Post
+        post = Post.objects.create(author=self.student, content="Delete me please", category="general")
+        self.assertEqual(Post.objects.count(), 1)
+        
+        response = self.client.get(f"/dashboard/delete-post/{post.id}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Post.objects.count(), 0)
+
+    def test_delete_post_unauthorized(self):
+        """
+        Tests that a user cannot delete another user's post.
+        """
+        from accounts.models import Post
+        other_user = User.objects.create_user(
+            username="other_u",
+            email="other_u@indoreinstitute.com",
+            password="Password123!"
+        )
+        post = Post.objects.create(author=other_user, content="Don't touch this", category="general")
+        self.assertEqual(Post.objects.count(), 1)
+        
+        response = self.client.get(f"/dashboard/delete-post/{post.id}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Post.objects.count(), 1)

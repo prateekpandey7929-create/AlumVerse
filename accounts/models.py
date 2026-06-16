@@ -141,3 +141,29 @@ class AlumniRequest(models.Model):
         return self.name
 
 
+class Post(models.Model):
+    CATEGORY_CHOICES = (
+        ('general', 'General Tech Discussion'),
+        ('job_alert', 'Job / Placement Alert'),
+        ('internship', 'Internship Update'),
+        ('motivation', 'Career Motivation'),
+        ('hackathon', 'Hackathon / Event'),
+    )
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    content = models.TextField()
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='general')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.author.username} - {self.category} ({self.created_at.strftime('%Y-%m-%d')})"
+
+
+class PostImage(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='post_images/')
+
+    def __str__(self):
+        return f"Image for Post {self.post.id}"
+
+

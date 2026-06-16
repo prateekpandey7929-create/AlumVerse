@@ -20,97 +20,10 @@
         </div>
     </div>
 
-    <!-- Quick Actions Header -->
-    <div class="d-flex align-items-center justify-content-between mb-4 mt-5">
-        <h4 class="mb-0 fw-bold"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Tools & Actions</h4>
-    </div>
+    <!-- Community Feed -->
+    {% include 'dashboard/feed.html' %}
 
-    <div class="row g-4">
-        <!-- AI Recommendation -->
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card">
-                <div class="icon pink">
-                    <i class="bi bi-stars"></i>
-                </div>
-                <h5>AI Recommendations</h5>
-                <p>Get instant recommendations matching your target skillsets and majors.</p>
-                <a href="/ai-recommendations/" class="btn btn-outline-primary w-100 mt-auto">
-                    Get Matches
-                </a>
-            </div>
-        </div>
 
-        <!-- Skill Gap -->
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card">
-                <div class="icon green">
-                    <i class="bi bi-bar-chart-steps"></i>
-                </div>
-                <h5>Skill Gap Analyzer</h5>
-                <p>Compare your current capabilities with latest industry demands.</p>
-                <a href="/skill-gap/" class="btn btn-outline-primary w-100 mt-auto">
-                    Analyze Gaps
-                </a>
-            </div>
-        </div>
-
-        <!-- Resume Analyzer -->
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card">
-                <div class="icon orange">
-                    <i class="bi bi-file-earmark-text-fill"></i>
-                </div>
-                <h5>Resume Analyzer</h5>
-                <p>Upload your resume and get immediate ATS feedback and suggestions.</p>
-                <a href="/resume-analyzer/" class="btn btn-outline-primary w-100 mt-auto">
-                    Analyze Resume
-                </a>
-            </div>
-        </div>
-
-        <!-- Mentorship -->
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card">
-                <div class="icon pink">
-                    <i class="bi bi-calendar2-week-fill"></i>
-                </div>
-                <h5>Career Path</h5>
-                <p>Explore recommended career paths based on industry projections.</p>
-                <a href="{% url 'career_path' %}" class="btn btn-outline-primary w-100 mt-auto">
-                    View Career Path
-                </a>
-            </div>
-        </div>
-
-        <!-- Events & Jobs -->
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card">
-                <div class="icon cyan">
-                    <i class="bi bi-briefcase-fill"></i>
-                </div>
-                <h5>Jobs & Internships</h5>
-                <p>Discover placement opportunities posted directly by IIST alumni.</p>
-                <a href="/jobs/" class="btn btn-outline-primary w-100 mt-auto">
-                    Explore Jobs
-                </a>
-            </div>
-        </div>
-
-        <!-- Messaging -->
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card">
-                <div class="icon dark">
-                    <i class="bi bi-chat-left-dots-fill"></i>
-                </div>
-                <h5>Discussions & Inbox</h5>
-                <p>Join group chats with peer students or message mentors privately.</p>
-                <div class="d-flex gap-2 mt-auto">
-                    <a href="/messages/community/" class="btn btn-primary w-100 py-2 btn-sm">Community</a>
-                    <a href="/inbox/" class="btn btn-outline-primary w-100 py-2 btn-sm">Inbox</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Details Grid -->
     <div class="row mt-5 g-4">

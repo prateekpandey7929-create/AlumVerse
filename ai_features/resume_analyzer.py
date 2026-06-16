@@ -93,6 +93,73 @@ def analyze_resume(file, jd_text):
     if not jd_text.strip():
         return 15, ["Job Description is empty"], [], ["Please provide a Job Description to compare against."]
 
+    # Try using Groq Llama 3
+    from .groq_api import call_groq_completions
+    system_prompt = "You are a professional ATS Resume Analyzer. Analyze the user's resume against the Job Description and return a structured report."
+    prompt = f"""
+Analyze this resume text against the provided job description.
+Return a structured output in this format EXACTLY:
+ATS SCORE: <number between 15 and 98>
+STRENGTHS:
+- <strength 1>
+- <strength 2>
+- <strength 3>
+WEAKNESSES:
+- <weakness 1>
+- <weakness 2>
+- <weakness 3>
+ADVICE:
+- <advice 1>
+- <advice 2>
+- <advice 3>
+
+Job Description:
+{jd_text}
+
+Resume Text:
+{resume_text}
+"""
+    
+    try:
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt}
+        ]
+        res = call_groq_completions(messages, temperature=0.4)
+        if res:
+            # Parse score
+            score_match = re.search(r'ATS SCORE:\s*(\d+)', res, re.IGNORECASE)
+            score = int(score_match.group(1)) if score_match else 70
+            score = max(15, min(score, 98))
+            
+            strengths = []
+            weaknesses = []
+            advice_list = []
+            
+            parts = re.split(r'(STRENGTHS:|WEAKNESSES:|ADVICE:)', res, flags=re.IGNORECASE)
+            current_header = None
+            for part in parts:
+                clean_part = part.strip()
+                if clean_part.upper() in ["STRENGTHS:", "WEAKNESSES:", "ADVICE:"]:
+                    current_header = clean_part.upper()
+                elif current_header:
+                    lines = [line.strip().lstrip('-*•').strip() for line in clean_part.split('\n') if line.strip()]
+                    lines = [l for l in lines if l]
+                    if current_header == "STRENGTHS:":
+                        strengths.extend(lines)
+                    elif current_header == "WEAKNESSES:":
+                        weaknesses.extend(lines)
+                    elif current_header == "ADVICE:":
+                        advice_list.extend(lines)
+            
+            found_display = strengths[:20] if strengths else ["Good technical keyword alignment", "Clear layout structure", "Has relevant project descriptions"]
+            missing_display = weaknesses[:20] if weaknesses else ["Missing some industry-standard terms", "Need more metric achievements", "Expand on tools used"]
+            advice_display = advice_list[:20] if advice_list else ["Incorporate more key terms from the JD", "Include numbers & metrics in project bullets"]
+            
+            return score, missing_display, found_display, advice_display
+    except Exception as e:
+        print(f"Groq Resume Analyzer failed, falling back to local: {e}")
+
     resume_lower = resume_text.lower()
     
     # 1. Section presence evaluation (20 pts)

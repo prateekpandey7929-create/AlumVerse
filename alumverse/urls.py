@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from django.contrib import admin
 from django.urls import path
 from django.conf import settings
@@ -24,7 +25,8 @@ admin_approve_request,
 change_password,
 forgot_password,
 forgot_password_verify,
-alumni_id_card
+alumni_id_card,
+delete_post
 )
 
 from alumni.views import (
@@ -101,6 +103,8 @@ urlpatterns = [
     # ================= DASHBOARD =================
 
     path('dashboard/', dashboard),
+
+    path('dashboard/delete-post/<int:post_id>/', delete_post),
 
     path('profile/', profile),
 

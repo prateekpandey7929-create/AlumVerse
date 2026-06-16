@@ -4,9 +4,23 @@ from accounts.models import User
 from accounts.models import Profile
 
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def alumni_directory(request):
     alumni = User.objects.filter(role='alumni')
-    return render(request, 'alumni_directory.html', {'alumni': alumni})
+    # AI recommendations for logged in student/alumni
+    from ai_features.recommendation import recommend_alumni
+    student_profile = request.user.profile
+    recommended_ids = recommend_alumni(student_profile)
+    # Fetch profiles and sort by recommendation score order
+    recommendations = list(Profile.objects.filter(user_id__in=recommended_ids).select_related('user'))
+    recommendations.sort(key=lambda p: recommended_ids.index(p.user_id))
+    
+    return render(request, 'alumni_directory.html', {
+        'alumni': alumni,
+        'recommendations': recommendations
+    })
 
 
 def alumni_profile(request, id):

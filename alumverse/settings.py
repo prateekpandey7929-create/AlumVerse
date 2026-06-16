@@ -167,3 +167,17 @@ DEFAULT_FROM_EMAIL = 'AlumVerse <admin.alumverse2025@gmail.com>'
 
 # Redirect URL for @login_required decorator
 LOGIN_URL = '/login/'
+
+# Groq AI Settings
+GROQ_API_KEY = 'gsk_xxxxxxx'
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    with open(env_path, 'r') as f:
+        for line in f:
+            if line.strip().startswith('GROQ_API_KEY='):
+                GROQ_API_KEY = line.split('=', 1)[1].strip().strip("'").strip('"')
+                break
+
+if GROQ_API_KEY == 'gsk_xxxxxxx' or not GROQ_API_KEY:
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', 'gsk_xxxxxxx')
+

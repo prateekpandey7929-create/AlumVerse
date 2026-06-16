@@ -170,6 +170,11 @@ h1, h2, h3, h4, h5, h6, .navbar-brand h5, .hero-image h1 {
     border-radius: var(--radius-full);
     font-weight: 500;
     font-size: 12px;
+    white-space: normal;
+    word-break: break-word;
+    text-align: left;
+    line-height: 1.4;
+    max-width: 100%;
 }
 .bg-primary { background-color: var(--primary-bg) !important; color: var(--primary) !important; }
 .bg-success { background-color: var(--success-bg) !important; color: var(--success) !important; }

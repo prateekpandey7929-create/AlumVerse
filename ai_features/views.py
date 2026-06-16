@@ -109,13 +109,34 @@ def alumni_recommendations(request):
     })
 
 from .chatbot import chatbot_response
+from .groq_api import call_groq_completions
 
 def chatbot(request):
     """
-    Receives user chatbot query posts and returns JSON response.
+    Receives user chatbot query posts and returns JSON response using Groq completions,
+    falling back to local keyword support if Groq is unconfigured or fails.
     """
     if request.method == "POST":
-        query = request.POST.get("query")
-        response = chatbot_response(query)
+        query = request.POST.get("query", "").strip()
+        if not query:
+            return JsonResponse({"error": "Query is empty"}, status=400)
+
+        # Attempt to use Groq Llama 3 model
+        system_prompt = "Tum AlumVerse ke career mentor ho, badtameezi mat karna aur career ke baare me sahi guide karna."
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query}
+        ]
+        
+        response = None
+        try:
+            response = call_groq_completions(messages, temperature=0.7)
+        except Exception as e:
+            print(f"Error calling Groq completion in chatbot: {e}")
+            
+        if not response:
+            # Fall back to local rule-based chatbot
+            response = chatbot_response(query)
+
         return JsonResponse({"response": response})
     return JsonResponse({"error": "Invalid request"}, status=400)

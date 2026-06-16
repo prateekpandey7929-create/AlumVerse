@@ -174,7 +174,63 @@ def user_login(request):
 def dashboard(request):
     """
     Renders corresponding dashboard with live database stats and metrics.
+    Also handles new post creation with AI content moderation and auto-tagging.
     """
+    from .models import Post
+    import re
+
+    if request.method == "POST" and "create_post" in request.POST:
+        content = request.POST.get("content", "").strip()
+        category = request.POST.get("category", "general").strip()
+
+        if not content:
+            messages.error(request, "Post content cannot be empty.")
+            return redirect('/dashboard/')
+
+        # AI Content Moderation: checks for bad words/profanity
+        profane_words = ["abuse", "spam", "badword", "stupid", "idiot", "nonsense", "vulgar", "fuck", "shit", "bitch", "bastard", "kamina", "saala", "kamine", "scam", "fraud"]
+        content_lower = content.lower()
+        flagged = False
+        for word in profane_words:
+            if re.search(r'\b' + re.escape(word) + r'\b', content_lower):
+                flagged = True
+                break
+        
+        if flagged:
+            messages.error(request, "Please keep the feed professional. Inappropriate content detected.")
+            return redirect('/dashboard/')
+
+        # AI Auto-Tagging
+        tags = []
+        if any(w in content_lower for w in ["job", "hiring", "hire", "recruit", "referral", "opening", "vacancy", "placement"]):
+            tags.append("#JobAlert")
+            tags.append("#Placement")
+        if any(w in content_lower for w in ["intern", "internship", "stipend"]):
+            tags.append("#Internship")
+        if any(w in content_lower for w in ["hackathon", "contest", "event", "competition", "codethon"]):
+            tags.append("#Hackathon")
+        if any(w in content_lower for w in ["tech", "python", "programming", "ai", "coding", "software", "development", "developer", "java", "cpp", "javascript"]):
+            tags.append("#TechTalk")
+        if any(w in content_lower for w in ["motivation", "success", "inspire", "story", "hardwork", "dream", "motivate"]):
+            tags.append("#CareerMotivation")
+        
+        if tags:
+            content = content + "\n\n" + " ".join(tags)
+
+        post = Post.objects.create(author=request.user, content=content, category=category)
+        
+        images = request.FILES.getlist('images')
+        if images:
+            from .models import PostImage
+            for img in images:
+                PostImage.objects.create(post=post, image=img)
+
+        messages.success(request, "Post published successfully!")
+        return redirect('/dashboard/')
+
+    # Fetch posts for all roles
+    posts = Post.objects.all().order_by('-created_at')
+
     if request.user.role == "student":
         # Query active job postings
         jobs = Opportunity.objects.all().order_by("-created_at")[:3]
@@ -199,7 +255,8 @@ def dashboard(request):
             {
                 'jobs': jobs,
                 'total_mentorships': total_mentorships,
-                'profile_views': profile_views
+                'profile_views': profile_views,
+                'posts': posts,
             }
         )
 
@@ -234,7 +291,8 @@ def dashboard(request):
                 "active_jobs_count": active_jobs_count,
                 "total_mentorships": total_mentorships,
                 "recent_chats": recent_chats,
-                "profile_views": profile_views
+                "profile_views": profile_views,
+                'posts': posts,
             }
         )
     elif request.user.role == "admin" or request.user.is_staff:
@@ -263,6 +321,7 @@ def dashboard(request):
                 'messages_count': messages_count,
                 'users': users_list,
                 'pending_requests': pending_requests,
+                'posts': posts,
             }
         )
     else:
@@ -745,3 +804,21 @@ def alumni_id_card(request):
         "profile": profile,
         "unique_code": unique_code
     })
+
+
+@login_required
+def delete_post(request, post_id):
+    """
+    Deletes a specific community feed post.
+    Validates that the logged-in user is the author of the post or a staff admin.
+    """
+    from .models import Post
+    post = get_object_or_404(Post, id=post_id)
+    
+    if post.author == request.user or request.user.role == 'admin' or request.user.is_staff:
+        post.delete()
+        messages.success(request, "Post deleted successfully.")
+    else:
+        messages.error(request, "You are not authorized to delete this post.")
+        
+    return redirect('/dashboard/')

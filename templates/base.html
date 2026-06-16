@@ -73,6 +73,18 @@
 
                     <!-- USER LOGGED IN -->
                     {% if user.is_authenticated %}
+                        <!-- Bell Icon Notification Button -->
+                        <li class="nav-item me-2">
+                            <a href="/notifications/" class="nav-link p-2 text-dark position-relative" title="Notifications" style="text-decoration: none;">
+                                <i class="bi bi-bell-fill fs-5 text-secondary"></i>
+                                {% if notification_count > 0 %}
+                                    <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="font-size: 9px; padding: 3px 5px; top: 10px; left: 22px;">
+                                        {{ notification_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        
                         {% if user.role == 'admin' or user.is_superuser %}
                             <li class="nav-item">
                                 <a class="nav-link px-3 fw-semibold text-primary" href="/dashboard/"><i class="bi bi-shield-lock-fill me-1"></i>Admin Dashboard</a>
@@ -130,8 +142,8 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="/profile/" class="sidebar-link {% if request.path == '/profile/' %}active{% endif %}">
-                                        <i class="bi bi-person-fill"></i>
+                                    <a href="/profile/" class="sidebar-link {% if request.path == '/profile/' or '/edit-profile/' in request.path %}active{% endif %}">
+                                        <i class="bi bi-person-badge-fill"></i>
                                         <span>My Profile</span>
                                     </a>
                                 </li>
@@ -141,6 +153,44 @@
                                         <span>Alumni Directory</span>
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="/inbox/" class="sidebar-link {% if request.path == '/inbox/' %}active{% endif %}">
+                                        <i class="bi bi-envelope-open-fill"></i>
+                                        <span>Inbox</span>
+                                    </a>
+                                </li>
+                                
+                                {% if user.role == 'student' %}
+                                    <!-- CAREER HUB Header & AI Tools -->
+                                    <li class="menu-header mt-3 mb-1 text-uppercase text-muted" style="font-size: 10px; font-weight: 700; letter-spacing: 0.8px; padding-left: 16px; opacity: 0.65;">
+                                        <span>CAREER HUB</span>
+                                    </li>
+                                    <li>
+                                        <a href="/jobs/" class="sidebar-link {% if '/jobs/' in request.path or '/post-job/' in request.path %}active{% endif %}">
+                                            <i class="bi bi-briefcase-fill"></i>
+                                            <span>Jobs Hub</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/resume-analyzer/" class="sidebar-link {% if '/resume-analyzer/' in request.path %}active{% endif %}">
+                                            <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                                            <span>Resume Analyzer</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/career-path/" class="sidebar-link {% if '/career-path/' in request.path %}active{% endif %}">
+                                            <i class="bi bi-compass-fill"></i>
+                                            <span>Career Paths</span>
+                                        </a>
+                                    </li>
+                                {% elif user.role == 'alumni' %}
+                                    <li>
+                                        <a href="/post-job/" class="sidebar-link {% if request.path == '/post-job/' %}active{% endif %}">
+                                            <i class="bi bi-briefcase-fill"></i>
+                                            <span>Post a Job</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
                                 <li class="mt-4 pt-3 border-top">
                                     <a href="/logout/" class="sidebar-link logout-link">
                                         <i class="bi bi-box-arrow-right"></i>

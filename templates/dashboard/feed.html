@@ -3,8 +3,8 @@
 <!-- Community Feed Container -->
 <div class="community-feed mt-4">
     
-    <!-- Create Post Box (Only for authenticated Students & Alumni) -->
-    {% if user.role == 'student' or user.role == 'alumni' %}
+    <!-- Create Post Box (For authenticated Students, Alumni, and Admins) -->
+    {% if user.role == 'student' or user.role == 'alumni' or user.role == 'admin' or user.is_staff %}
     <div class="card border-0 shadow-sm mb-4" style="border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--border-color) !important;">
         <div class="card-body p-4">
             <div class="d-flex align-items-center mb-3">
@@ -139,7 +139,7 @@
                                     <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <strong class="text-dark small mb-0">{{ post.parent_post.author.full_name|default:post.parent_post.author.username }}</strong>
                                         <span class="badge text-secondary bg-secondary-subtle py-0 px-1.5" style="font-size: 8px; font-weight: 600;">
-                                            {% if post.parent_post.author.role == 'alumni' %}Alumni{% else %}Student{% endif %}
+                                            {% if post.parent_post.author.role == 'admin' %}Admin{% elif post.parent_post.author.role == 'alumni' %}Alumni{% else %}Student{% endif %}
                                         </span>
                                     </div>
                                     <small class="text-muted" style="font-size: 10px;">{{ post.parent_post.created_at|date:"d M Y" }}</small>

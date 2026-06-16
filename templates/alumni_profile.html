@@ -35,11 +35,13 @@
                     </div>
                 </div>
             </div>
+            {% if request.user != profile.user %}
             <div class="col-md-4 text-center text-md-end">
                 <a href="/messages/{{ profile.user.id }}/" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold">
-                    <i class="bi bi-chat-left-text-fill me-1"></i> Message Alumni
+                    <i class="bi bi-chat-left-text-fill me-1"></i> Message {% if profile.user.role == 'student' %}Student{% elif profile.user.role == 'alumni' %}Alumni{% else %}User{% endif %}
                 </a>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -95,7 +97,11 @@
                 <h5 class="fw-bold mb-3"><i class="bi bi-envelope-at-fill text-primary me-2"></i>Contact Info</h5>
                 <div class="mb-3">
                     <label class="form-label mb-0 text-muted small">Primary Email</label>
-                    <p class="mb-0 text-dark fw-medium">{{ profile.user.email }}</p>
+                    {% if request.user.role == 'admin' or request.user.is_staff or request.user == profile.user or profile.user.role == 'alumni' %}
+                        <p class="mb-0 text-dark fw-medium">{{ profile.user.email }}</p>
+                    {% else %}
+                        <p class="mb-0 text-muted small fw-semibold"><i class="bi bi-lock-fill me-1 text-warning"></i> Visible to admins & alumni only</p>
+                    {% endif %}
                 </div>
             </div>
 

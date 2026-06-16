@@ -5,7 +5,7 @@
 <div class="container py-4">
 
     <!-- Header -->
-    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap g-3">
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
             <h2 class="mb-1 fw-bold text-dark"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Administration Center</h2>
             <p class="text-muted mb-0" style="font-size: 15px;">
@@ -16,13 +16,11 @@
             <a href="/admin-dashboard/add-user/" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm" style="border-radius: 8px;">
                 <i class="bi bi-person-plus-fill me-2"></i>Add New User
             </a>
+        </div>
     </div>
 
-    <!-- Community Feed -->
-    {% include 'dashboard/feed.html' %}
-
     <!-- Stats row -->
-    <div class="row g-4 mb-5">
+    <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="stat-card" style="background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px;">
                 <h6 class="text-muted mb-1 small fw-bold text-uppercase">Total Users</h6>
@@ -83,6 +81,11 @@
                 {% endif %}
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold py-2 px-4" id="feed-tab" data-bs-toggle="pill" data-bs-target="#feed-panel" type="button" role="tab" aria-controls="feed-panel" aria-selected="false" style="border-radius: 8px;">
+                <i class="bi bi-newspaper me-2"></i>Community Feed
+            </button>
+        </li>
     </ul>
 
     <!-- Tabs Content -->
@@ -114,7 +117,9 @@
                                         <div class="d-flex align-items-center">
                                             <img src="{{ u.profile.profile_photo_url }}" class="rounded-circle me-3" width="38" height="38" style="object-fit: cover; border: 1px solid #ddd;">
                                             <div>
-                                                <strong class="text-dark d-block">{{ u.full_name|default:u.username }}</strong>
+                                                <a href="/alumni-profile/{{ u.id }}/" class="text-decoration-none text-dark fw-bold d-block" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-primary)'" style="transition: color 0.15s ease-in-out;">
+                                                    {{ u.full_name|default:u.username }}
+                                                </a>
                                                 <small class="text-muted">@{{ u.username }}</small>
                                             </div>
                                         </div>
@@ -211,6 +216,13 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+        
+        <!-- 3️⃣ COMMUNITY FEED PANEL -->
+        <div class="tab-pane fade" id="feed-panel" role="tabpanel" aria-labelledby="feed-tab">
+            <div style="max-width: 800px; margin: 0 auto;">
+                {% include 'dashboard/feed.html' %}
             </div>
         </div>
 

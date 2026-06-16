@@ -23,7 +23,8 @@ admin_user_delete,
 admin_approve_request,
 change_password,
 forgot_password,
-forgot_password_verify
+forgot_password_verify,
+alumni_id_card
 )
 
 from alumni.views import (
@@ -108,6 +109,8 @@ urlpatterns = [
     path('profile/add-personal-email/', add_personal_email),
 
     path('profile/verify-personal-email/', verify_personal_email),
+
+    path('profile/id-card/', alumni_id_card, name='alumni_id_card'),
 
     path('edit-profile/', edit_profile),
 

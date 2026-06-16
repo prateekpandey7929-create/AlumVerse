@@ -148,3 +148,34 @@ class UserAuthTests(TestCase):
         
         user_exists = User.objects.filter(email="ruturaj123@gmail.com").exists()
         self.assertTrue(user_exists)
+
+    def test_alumni_id_card_view(self):
+        """
+        Tests that alumni_id_card view returns success for alumni but redirects student role.
+        """
+        alumni = User.objects.create_user(
+            username="alumtest",
+            email="alumtest@indoreinstitute.com",
+            password="Password123!",
+            role="alumni"
+        )
+        
+        response = self.client.get("/profile/id-card/")
+        self.assertEqual(response.status_code, 302)
+        
+        student = User.objects.create_user(
+            username="studenttest",
+            email="studenttest@indoreinstitute.com",
+            password="Password123!",
+            role="student"
+        )
+        self.client.login(username="studenttest", password="Password123!")
+        response = self.client.get("/profile/id-card/")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/profile/")
+        self.client.logout()
+        
+        self.client.login(username="alumtest", password="Password123!")
+        response = self.client.get("/profile/id-card/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Digital Alumni ID Card")

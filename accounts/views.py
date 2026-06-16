@@ -724,3 +724,24 @@ def forgot_password_verify(request):
             return redirect('/forgot-password/')
             
     return render(request, "forgot_password_verify.html", {"email": email})
+
+
+@login_required
+def alumni_id_card(request):
+    """
+    Renders a beautiful digital identity card for the verified alumni.
+    Generates a unique card reference code dynamically.
+    """
+    if request.user.role != 'alumni':
+        messages.error(request, "Access denied. Only registered Alumni can view the Digital ID Card.")
+        return redirect('/profile/')
+        
+    grad_year = request.user.graduation_year or 2026
+    unique_code = f"AMV-{request.user.id}-{grad_year}"
+    
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    
+    return render(request, "alumni_id_card.html", {
+        "profile": profile,
+        "unique_code": unique_code
+    })

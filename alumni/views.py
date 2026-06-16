@@ -25,6 +25,9 @@ def alumni_directory(request):
 
 def alumni_profile(request, id):
     profile = Profile.objects.get(user_id=id)
+    if not request.user.is_authenticated or request.user.id != profile.user.id:
+        profile.views_count += 1
+        profile.save(update_fields=['views_count'])
     return render(request, 'alumni_profile.html', {'profile': profile})
 
 

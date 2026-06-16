@@ -437,5 +437,41 @@ class CommunityFeedAndAITests(TestCase):
         self.assertEqual(repost.parent_post, original)
         self.assertEqual(repost.content, "Check this original!")
 
+    def test_profile_views_count(self):
+        """
+        Tests that viewing another user's profile increments their views_count,
+        but viewing one's own profile does not.
+        """
+        # Create an alumni user
+        alumni = User.objects.create_user(
+            username="alum_view_test",
+            email="alum_view_test@indoreinstitute.com",
+            password="Password123!",
+            role="alumni"
+        )
+        
+        # Initial view count should be 0
+        self.assertEqual(alumni.profile.views_count, 0)
+        
+        # Current logged in user is self.student. They view alumni profile.
+        response = self.client.get(f"/alumni-profile/{alumni.id}/")
+        self.assertEqual(response.status_code, 200)
+        
+        # alumni views_count should be 1 now
+        alumni.profile.refresh_from_db()
+        self.assertEqual(alumni.profile.views_count, 1)
+        
+        # Now alumni logs in and views their own profile page.
+        self.client.logout()
+        self.client.login(username="alum_view_test", password="Password123!")
+        
+        response = self.client.get(f"/alumni-profile/{alumni.id}/")
+        self.assertEqual(response.status_code, 200)
+        
+        # Own view should NOT increment views_count
+        alumni.profile.refresh_from_db()
+        self.assertEqual(alumni.profile.views_count, 1)
+
+
 
 

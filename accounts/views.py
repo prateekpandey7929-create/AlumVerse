@@ -254,8 +254,8 @@ def dashboard(request):
                 unique_alumni.add(other.id)
         total_mentorships = len(unique_alumni)
 
-        # Dynamic profile views count for visual rendering
-        profile_views = (request.user.id * 13) % 80 + 15
+        # Actual profile views count from database
+        profile_views = request.user.profile.views_count
         
         return render(
             request,
@@ -289,8 +289,8 @@ def dashboard(request):
         recent_chats = list(unique_students.values())[:3]
         total_mentorships = len(unique_students)
         
-        # Dynamic profile views count for visual rendering
-        profile_views = (request.user.id * 19) % 250 + 60
+        # Actual profile views count from database
+        profile_views = request.user.profile.views_count
 
         return render(
             request,

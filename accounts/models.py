@@ -88,6 +88,8 @@ class Profile(models.Model):
 
     experience = models.TextField(blank=True)
 
+    views_count = models.PositiveIntegerField(default=0)
+
     def __str__(self):
         return self.user.username
 

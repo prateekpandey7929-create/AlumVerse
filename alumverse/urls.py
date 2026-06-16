@@ -26,7 +26,13 @@ change_password,
 forgot_password,
 forgot_password_verify,
 alumni_id_card,
-delete_post
+delete_post,
+toggle_like,
+toggle_save,
+increment_video_view,
+add_comment,
+edit_post,
+repost
 )
 
 from alumni.views import (
@@ -105,6 +111,18 @@ urlpatterns = [
     path('dashboard/', dashboard),
 
     path('dashboard/delete-post/<int:post_id>/', delete_post),
+
+    path('dashboard/like/<int:post_id>/', toggle_like),
+
+    path('dashboard/save/<int:post_id>/', toggle_save),
+
+    path('dashboard/video-view/<int:video_id>/', increment_video_view),
+
+    path('dashboard/comment/<int:post_id>/', add_comment),
+
+    path('dashboard/edit-post/<int:post_id>/', edit_post),
+
+    path('dashboard/repost/<int:post_id>/', repost),
 
     path('profile/', profile),
 

@@ -830,3 +830,121 @@ def delete_post(request, post_id):
         messages.error(request, "You are not authorized to delete this post.")
         
     return redirect('/dashboard/')
+
+
+@login_required
+def toggle_like(request, post_id):
+    """
+    AJAX view to toggle like state on a post.
+    Returns JSON status.
+    """
+    from django.http import JsonResponse
+    from .models import Post
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return JsonResponse({'liked': liked, 'count': post.likes.count()})
+
+
+@login_required
+def toggle_save(request, post_id):
+    """
+    AJAX view to toggle saved state on a post.
+    Returns JSON status.
+    """
+    from django.http import JsonResponse
+    from .models import Post
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.saves.all():
+        post.saves.remove(request.user)
+        saved = False
+    else:
+        post.saves.add(request.user)
+        saved = True
+    return JsonResponse({'saved': saved})
+
+
+@login_required
+def increment_video_view(request, video_id):
+    """
+    AJAX view to increment the views_count of a PostVideo.
+    Returns JSON status.
+    """
+    from django.http import JsonResponse
+    from .models import PostVideo
+    video_obj = get_object_or_404(PostVideo, id=video_id)
+    video_obj.views_count += 1
+    video_obj.save()
+    return JsonResponse({'views': video_obj.views_count})
+
+
+@login_required
+def add_comment(request, post_id):
+    """
+    Adds a text comment to a post.
+    """
+    from .models import Post, Comment
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == "POST":
+        content = request.POST.get("comment_text", "").strip()
+        if content:
+            Comment.objects.create(post=post, author=request.user, content=content)
+            messages.success(request, "Comment added successfully.")
+        else:
+            messages.error(request, "Comment cannot be empty.")
+    return redirect('/dashboard/')
+
+
+@login_required
+def edit_post(request, post_id):
+    """
+    Renders edit post form or updates post content.
+    """
+    from .models import Post
+    post = get_object_or_404(Post, id=post_id)
+    
+    # Check permissions
+    if post.author != request.user and not request.user.is_staff and request.user.role != 'admin':
+        messages.error(request, "You are not authorized to edit this post.")
+        return redirect('/dashboard/')
+        
+    if request.method == "POST":
+        content = request.POST.get("content", "").strip()
+        if content:
+            post.content = content
+            post.save()
+            messages.success(request, "Post updated successfully.")
+            return redirect('/dashboard/')
+        else:
+            messages.error(request, "Post content cannot be empty.")
+            
+    return render(request, "dashboard/edit_post.html", {"post": post})
+
+
+@login_required
+def repost(request, post_id):
+    """
+    Creates a repost of an existing post with optional comment.
+    """
+    from .models import Post
+    original_post = get_object_or_404(Post, id=post_id)
+    
+    if request.method == "POST":
+        content = request.POST.get("repost_comment", "").strip()
+        category = request.POST.get("category", original_post.category)
+        
+        # If the original post is already a repost, point to the root parent post instead to prevent deep nesting
+        parent = original_post.parent_post if original_post.parent_post else original_post
+        
+        repost_instance = Post.objects.create(
+            author=request.user,
+            content=content,
+            category=category,
+            parent_post=parent
+        )
+        messages.success(request, "Post shared successfully!")
+    return redirect('/dashboard/')

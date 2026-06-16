@@ -154,6 +154,9 @@ class Post(models.Model):
     content = models.TextField()
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='general')
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
+    saves = models.ManyToManyField(User, related_name='saved_posts', blank=True)
+    parent_post = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='reposts')
 
     def __str__(self):
         return f"{self.author.username} - {self.category} ({self.created_at.strftime('%Y-%m-%d')})"
@@ -170,9 +173,21 @@ class PostImage(models.Model):
 class PostVideo(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='videos')
     video = models.FileField(upload_to='post_videos/')
+    views_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Video for Post {self.post.id}"
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on post {self.post.id}"
+
 
 
 

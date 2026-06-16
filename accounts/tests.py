@@ -353,4 +353,89 @@ class CommunityFeedAndAITests(TestCase):
         # Verify post creation rolled back / was deleted
         self.assertEqual(Post.objects.count(), 0)
 
+    def test_post_like_toggle(self):
+        """
+        Tests toggling post like state via AJAX.
+        """
+        from accounts.models import Post
+        post = Post.objects.create(author=self.student, content="Test Post", category="general")
+        self.assertEqual(post.likes.count(), 0)
+
+        # Like
+        response = self.client.post(f"/dashboard/like/{post.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['liked'])
+        self.assertEqual(response.json()['count'], 1)
+
+        # Unlike
+        response = self.client.post(f"/dashboard/like/{post.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['liked'])
+        self.assertEqual(response.json()['count'], 0)
+
+    def test_post_save_toggle(self):
+        """
+        Tests toggling post save state via AJAX.
+        """
+        from accounts.models import Post
+        post = Post.objects.create(author=self.student, content="Test Post", category="general")
+
+        # Save
+        response = self.client.post(f"/dashboard/save/{post.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['saved'])
+
+        # Unsave
+        response = self.client.post(f"/dashboard/save/{post.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['saved'])
+
+    def test_add_comment(self):
+        """
+        Tests posting a comment on a post.
+        """
+        from accounts.models import Post, Comment
+        post = Post.objects.create(author=self.student, content="Test Post", category="general")
+        self.assertEqual(post.comments.count(), 0)
+
+        response = self.client.post(f"/dashboard/comment/{post.id}/", {
+            "comment_text": "Nice post!"
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(post.comments.count(), 1)
+        self.assertEqual(post.comments.first().content, "Nice post!")
+
+    def test_edit_post(self):
+        """
+        Tests editing own post content.
+        """
+        from accounts.models import Post
+        post = Post.objects.create(author=self.student, content="Old Text", category="general")
+
+        response = self.client.post(f"/dashboard/edit-post/{post.id}/", {
+            "content": "Updated Text"
+        })
+        self.assertEqual(response.status_code, 302)
+        post.refresh_from_db()
+        self.assertEqual(post.content, "Updated Text")
+
+    def test_repost_post(self):
+        """
+        Tests reposting another user's post.
+        """
+        from accounts.models import Post
+        original = Post.objects.create(author=self.student, content="Original Post", category="general")
+        self.assertEqual(Post.objects.count(), 1)
+
+        response = self.client.post(f"/dashboard/repost/{original.id}/", {
+            "repost_comment": "Check this original!",
+            "category": "general"
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Post.objects.count(), 2)
+        repost = Post.objects.exclude(id=original.id).first()
+        self.assertEqual(repost.parent_post, original)
+        self.assertEqual(repost.content, "Check this original!")
+
+
 

@@ -22,11 +22,11 @@
                 
                 <!-- Media Upload Field -->
                 <div class="mb-3">
-                    <label for="post-images" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2" style="border-radius: var(--radius-sm); border-style: dashed; padding: 6px 12px; cursor: pointer;">
-                        <i class="bi bi-image" style="font-size: 16px;"></i>
-                        <span class="fw-semibold">Add Photos / Media</span>
+                    <label for="post-media" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2" style="border-radius: var(--radius-sm); border-style: dashed; padding: 6px 12px; cursor: pointer;">
+                        <i class="bi bi-images" style="font-size: 16px;"></i>
+                        <span class="fw-semibold">Add Photos / Videos</span>
                     </label>
-                    <input type="file" name="images" id="post-images" accept="image/*" multiple class="d-none" onchange="showSelectedFiles(this)">
+                    <input type="file" name="media" id="post-media" accept="image/*,video/*" multiple class="d-none" onchange="validateFiles(this)">
                     <div id="file-preview-list" class="mt-2 text-muted small" style="font-size: 12px; font-weight: 500;"></div>
                 </div>
                 
@@ -121,11 +121,22 @@
                         {{ post.content }}
                     </div>
 
-                    <!-- Post Images Media Grid -->
-                    {% if post.images.all %}
-                        <div class="post-images-grid mt-3 row g-2">
+                    <!-- Post Media Grid (Images & Videos) -->
+                    {% if post.images.all or post.videos.all %}
+                        <div class="post-media-grid mt-3 row g-2">
+                            <!-- Videos first -->
+                            {% for vid_obj in post.videos.all %}
+                                <div class="col-12 mb-2">
+                                    <video controls class="img-fluid rounded border w-100" style="max-height: 420px; background-color: #000;">
+                                        <source src="{{ vid_obj.video.url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            {% endfor %}
+                            
+                            <!-- Images -->
                             {% for img_obj in post.images.all %}
-                                <div class="{% if post.images.count == 1 %}col-12{% else %}col-6{% endif %}">
+                                <div class="{% if post.images.count == 1 and not post.videos.all %}col-12{% else %}col-6{% endif %}">
                                     <a href="{{ img_obj.image.url }}" target="_blank">
                                         <img src="{{ img_obj.image.url }}" class="img-fluid rounded border w-100" style="object-fit: cover; max-height: 380px;" alt="Post Media">
                                     </a>
@@ -147,17 +158,64 @@
     </div>
 </div>
 
-<!-- Scripts for Selected File Previews -->
+<!-- Scripts for Selected File Previews & Duration/Size Verification -->
 <script>
-function showSelectedFiles(input) {
-    var list = document.getElementById("file-preview-list");
-    list.innerHTML = "";
-    if (input.files && input.files.length > 0) {
-        var names = [];
-        for (var i = 0; i < input.files.length; i++) {
-            names.push(input.files[i].name);
+async function validateFiles(input) {
+    const files = input.files;
+    const previewList = document.getElementById("file-preview-list");
+    previewList.innerHTML = "";
+    
+    if (!files || files.length === 0) return;
+    
+    let fileNames = [];
+    for (let file of files) {
+        // Size check: max 100MB
+        if (file.size > 100 * 1024 * 1024) {
+            alert(`File "${file.name}" is too large! Maximum size is 100MB.`);
+            input.value = "";
+            return;
         }
-        list.innerHTML = "📎 " + names.join(", ") + " (" + input.files.length + " files selected)";
+        
+        // If it's a video, check the duration
+        if (file.type.startsWith("video/")) {
+            try {
+                const duration = await getVideoDuration(file);
+                if (duration > 600) { // 10 minutes (LinkedIn preferred limit)
+                    alert(`Video "${file.name}" is too long! LinkedIn preferred maximum duration is 10 minutes.`);
+                    input.value = "";
+                    previewList.innerHTML = "";
+                    return;
+                }
+                if (duration < 3) { // 3 seconds
+                    alert(`Video "${file.name}" is too short! Minimum duration is 3 seconds.`);
+                    input.value = "";
+                    previewList.innerHTML = "";
+                    return;
+                }
+            } catch (err) {
+                alert(`Could not read video metadata for "${file.name}".`);
+                input.value = "";
+                previewList.innerHTML = "";
+                return;
+            }
+        }
+        fileNames.push(file.name);
     }
+    previewList.innerHTML = "📎 " + fileNames.join(", ") + " (" + files.length + " files selected)";
+}
+
+function getVideoDuration(file) {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement("video");
+        video.preload = "metadata";
+        video.src = URL.createObjectURL(file);
+        video.onloadedmetadata = () => {
+            URL.revokeObjectURL(video.src);
+            resolve(video.duration);
+        };
+        video.onerror = () => {
+            reject("Error loading video");
+        };
+    });
 }
 </script>

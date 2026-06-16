@@ -5,3 +5,5 @@ staticfiles/
 *.pyc
 *.pdf
 .env
+media/
+

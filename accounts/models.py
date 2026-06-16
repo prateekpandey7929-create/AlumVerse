@@ -167,3 +167,12 @@ class PostImage(models.Model):
         return f"Image for Post {self.post.id}"
 
 
+class PostVideo(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='videos')
+    video = models.FileField(upload_to='post_videos/')
+
+    def __str__(self):
+        return f"Video for Post {self.post.id}"
+
+
+

@@ -219,11 +219,19 @@ def dashboard(request):
 
         post = Post.objects.create(author=request.user, content=content, category=category)
         
-        images = request.FILES.getlist('images')
-        if images:
-            from .models import PostImage
-            for img in images:
-                PostImage.objects.create(post=post, image=img)
+        media_files = request.FILES.getlist('media') or request.FILES.getlist('images')
+        if media_files:
+            from .models import PostImage, PostVideo
+            for file in media_files:
+                if file.content_type.startswith('video/'):
+                    if file.size > 100 * 1024 * 1024:
+                        messages.error(request, f"Video {file.name} is too large. Maximum size allowed is 100MB.")
+                        post.delete()
+                        return redirect('/dashboard/')
+                    PostVideo.objects.create(post=post, video=file)
+                else:
+                    # Treat everything else (primarily image/*) as image
+                    PostImage.objects.create(post=post, image=file)
 
         messages.success(request, "Post published successfully!")
         return redirect('/dashboard/')

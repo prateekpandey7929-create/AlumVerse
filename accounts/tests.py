@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from accounts.models import AlumniRequest
+from unittest.mock import patch, PropertyMock
+
 
 User = get_user_model()
 
@@ -308,3 +310,47 @@ class CommunityFeedAndAITests(TestCase):
         response = self.client.get(f"/dashboard/delete-post/{post.id}/")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Post.objects.count(), 1)
+
+    def test_post_with_video_success(self):
+        """
+        Tests posting a message along with a valid video.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from accounts.models import Post
+        
+        video_file = SimpleUploadedFile("sample.mp4", b"fake_video_bytes", content_type="video/mp4")
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "Check out this coding tutorial!",
+            "category": "general",
+            "media": [video_file]
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        post = Post.objects.first()
+        self.assertIsNotNone(post)
+        self.assertEqual(post.videos.count(), 1)
+
+    @patch('django.core.files.uploadedfile.UploadedFile.size', new_callable=PropertyMock)
+    def test_post_with_video_size_error(self, mock_size):
+        """
+        Tests that a post with a video exceeding 100MB is rejected.
+        """
+        mock_size.return_value = 101 * 1024 * 1024  # 101MB
+        
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from accounts.models import Post
+        
+        large_video = SimpleUploadedFile("large.mp4", b"small_bytes", content_type="video/mp4")
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "Uploading a huge movie",
+            "category": "general",
+            "media": [large_video]
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify post creation rolled back / was deleted
+        self.assertEqual(Post.objects.count(), 0)
+
+

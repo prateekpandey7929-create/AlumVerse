@@ -17,8 +17,12 @@
         <form method="POST" enctype="multipart/form-data">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-danger d-flex align-items-center gap-2">
-                        <i class="bi bi-exclamation-octagon-fill"></i>
+                    <div class="alert {% if 'success' in message.tags %}alert-success{% else %}alert-danger{% endif %} d-flex align-items-center gap-2">
+                        {% if 'success' in message.tags %}
+                            <i class="bi bi-check-circle-fill"></i>
+                        {% else %}
+                            <i class="bi bi-exclamation-octagon-fill"></i>
+                        {% endif %}
                         <div>{{ message }}</div>
                     </div>
                 {% endfor %}

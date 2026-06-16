@@ -1047,3 +1047,30 @@ footer a:hover {
     }
 }
 
+/* ==========================================================================
+   FEED & POSTS ACTIONS
+   ========================================================================== */
+.feed-action-btn {
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    gap: 8px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-secondary) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+}
+
+.feed-action-btn:hover {
+    background-color: var(--surface-variant) !important;
+    color: var(--text-primary) !important;
+    text-decoration: none !important;
+}
+
+.feed-action-btn:active {
+    transform: scale(0.95) !important;
+}
+
+

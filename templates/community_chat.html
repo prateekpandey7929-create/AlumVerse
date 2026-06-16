@@ -40,7 +40,7 @@
                             <!-- Sender (Self) Message block -->
                             <div class="d-flex justify-content-end mb-4">
                                 <div class="sent-bubble" style="max-width: 75%;">
-                                    <div class="d-flex align-items-center gap-1.5 mb-1 text-white opacity-90" style="font-size: 11px; font-weight: 500;">
+                                    <div class="d-flex align-items-center gap-2 mb-1 text-white opacity-90" style="font-size: 11px; font-weight: 500;">
                                         <span>Me ({{ msg.sender.username }})</span>
                                         <span class="badge bg-light text-dark py-0 px-1.5" style="font-size: 9px;">
                                             {% if msg.sender.role == "alumni" %}
@@ -62,7 +62,7 @@
                             <!-- Receiver / Others Message block -->
                             <div class="d-flex justify-content-start mb-4">
                                 <div class="received-bubble" style="max-width: 75%;">
-                                    <div class="d-flex align-items-center gap-1.5 mb-1" style="font-size: 11px; font-weight: 500;">
+                                    <div class="d-flex align-items-center gap-2 mb-1" style="font-size: 11px; font-weight: 500;">
                                         <span class="text-primary fw-bold">@{{ msg.sender.username }}</span>
                                         
                                         <!-- User Role Badge -->
@@ -95,7 +95,7 @@
                     <form method="POST" class="d-flex gap-2">
                         {% csrf_token %}
                         <input type="text" name="message" class="form-control py-2.5" placeholder="Share a career doubt or announcement..." required autocomplete="off">
-                        <button class="btn btn-success px-4 d-flex align-items-center gap-1.5 shadow-sm">
+                        <button class="btn btn-success px-4 d-flex align-items-center gap-2 shadow-sm">
                             <span>Post</span> <i class="bi bi-chat-square-dots-fill"></i>
                         </button>
                     </form>

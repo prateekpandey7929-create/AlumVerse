@@ -197,6 +197,10 @@ def dashboard(request):
                 break
         
         if flagged:
+            Notification.objects.create(
+                user=request.user,
+                message=f'[Rules Violation] User {request.user.username} tried to post inappropriate content: "{content[:50]}..."'
+            )
             messages.error(request, "Please keep the feed professional. Inappropriate content detected.")
             return redirect('/dashboard/')
 
@@ -343,7 +347,13 @@ def dashboard(request):
 @login_required
 def profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
-    return render(request, 'profile.html', {'profile': profile})
+    my_posts = request.user.posts.all().order_by('-created_at')
+    saved_posts = request.user.saved_posts.all().order_by('-created_at')
+    return render(request, 'profile.html', {
+        'profile': profile,
+        'my_posts': my_posts,
+        'saved_posts': saved_posts
+    })
 
 
 @login_required
@@ -365,6 +375,11 @@ def edit_profile(request):
 def notifications(request):
     notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    
+    # Also mark all unread messages for this user as read
+    from messaging.models import Message
+    Message.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
+    
     return render(request, 'notifications.html', {'notifications': notifications})
 
 
@@ -898,6 +913,12 @@ def toggle_like(request, post_id):
     else:
         post.likes.add(request.user)
         liked = True
+        # Send notification to post author if not liker
+        if post.author != request.user:
+            Notification.objects.create(
+                user=post.author,
+                message=f"{request.user.full_name or request.user.username} liked your post"
+            )
     return JsonResponse({'liked': liked, 'count': post.likes.count()})
 
 
@@ -939,11 +960,36 @@ def add_comment(request, post_id):
     Adds a text comment to a post.
     """
     from .models import Post, Comment
+    import re
     post = get_object_or_404(Post, id=post_id)
     if request.method == "POST":
         content = request.POST.get("comment_text", "").strip()
         if content:
+            # AI Content Moderation for comments
+            profane_words = ["abuse", "spam", "badword", "stupid", "idiot", "nonsense", "vulgar", "fuck", "shit", "bitch", "bastard", "kamina", "saala", "kamine", "scam", "fraud"]
+            content_lower = content.lower()
+            flagged = False
+            for word in profane_words:
+                if re.search(r'\b' + re.escape(word) + r'\b', content_lower):
+                    flagged = True
+                    break
+            
+            if flagged:
+                Notification.objects.create(
+                    user=request.user,
+                    message=f'[Rules Violation] User {request.user.username} tried to post inappropriate comment: "{content[:50]}..."'
+                )
+                messages.error(request, "Please keep the feed professional. Inappropriate content detected in comment.")
+                return redirect('/dashboard/')
+
             Comment.objects.create(post=post, author=request.user, content=content)
+            
+            # Send notification to post author if not commenter
+            if post.author != request.user:
+                Notification.objects.create(
+                    user=post.author,
+                    message=f"{request.user.full_name or request.user.username} commented on your post"
+                )
             messages.success(request, "Comment added successfully.")
         else:
             messages.error(request, "Comment cannot be empty.")
@@ -976,26 +1022,157 @@ def edit_post(request, post_id):
     return render(request, "dashboard/edit_post.html", {"post": post})
 
 
+
 @login_required
-def repost(request, post_id):
+@admin_required
+def admin_notifications(request):
     """
-    Creates a repost of an existing post with optional comment.
+    Renders the admin platform notifications panel, categorizing notifications
+    into Posts, Jobs, Rules Violations, and Other, preserving private chats encryption.
     """
-    from .models import Post
-    original_post = get_object_or_404(Post, id=post_id)
+    notifications = Notification.objects.select_related('user').order_by('-created_at')
     
-    if request.method == "POST":
-        content = request.POST.get("repost_comment", "").strip()
-        category = request.POST.get("category", original_post.category)
-        
-        # If the original post is already a repost, point to the root parent post instead to prevent deep nesting
-        parent = original_post.parent_post if original_post.parent_post else original_post
-        
-        repost_instance = Post.objects.create(
-            author=request.user,
-            content=content,
-            category=category,
-            parent_post=parent
+    post_notifications = []
+    job_notifications = []
+    rules_violations = []
+    other_notifications = []
+    
+    seen_messages = set()
+    
+    for n in notifications:
+        if n.message.startswith('[Rules Violation]'):
+            rules_violations.append(n)
+        else:
+            if n.message in seen_messages:
+                continue
+            seen_messages.add(n.message)
+            
+            if 'posted:' in n.message:
+                job_notifications.append(n)
+            elif 'reposted' in n.message or 'commented on' in n.message or 'liked your post' in n.message:
+                post_notifications.append(n)
+            else:
+                other_notifications.append(n)
+            
+    active_tab = request.GET.get('tab', 'post')
+    
+    return render(request, 'admin_notifications.html', {
+        'post_notifications': post_notifications,
+        'job_notifications': job_notifications,
+        'rules_violations': rules_violations,
+        'other_notifications': other_notifications,
+        'active_tab': active_tab,
+    })
+
+
+@login_required
+@admin_required
+def admin_send_warning(request, user_id):
+    """
+    Dispatches a guidelines warning notification and email simulation to a user.
+    """
+    user = get_object_or_404(User, id=user_id)
+    warning_message = "You have received a warning from the Administrator for violating community guidelines. Please keep the feed professional."
+    
+    # Send official warning notification
+    Notification.objects.create(
+        user=user,
+        message=warning_message
+    )
+    
+    # Simulate email
+    email_sent = False
+    try:
+        send_mail(
+            subject="AlumVerse Account Warning",
+            message=f"Hello {user.full_name or user.username},\n\n{warning_message}\n\nBest Regards,\nAlumVerse Admin Team",
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'admin.alumverse@gmail.com'),
+            recipient_list=[user.email],
+            fail_silently=False,
         )
-        messages.success(request, "Post shared successfully!")
+        email_sent = True
+    except Exception as e:
+        print(f"Error sending warning email to {user.email}: {e}")
+        
+    if email_sent:
+        messages.success(request, f"Warning sent to {user.full_name or user.username} and email notification dispatched successfully.")
+    else:
+        messages.success(request, f"Warning sent to {user.full_name or user.username} successfully (Email simulation active).")
+        
+    return redirect('/admin-dashboard/notifications/?tab=rules')
+
+
+@login_required
+def clear_notifications(request):
+    """
+    Clears all notification records for the logged-in user.
+    """
+    Notification.objects.filter(user=request.user).delete()
+    messages.success(request, "Notifications cleared successfully.")
+    return redirect('/notifications/')
+
+
+@login_required
+def toggle_comment_like(request, comment_id):
+    """
+    AJAX view to toggle like state on a comment.
+    Returns JSON status.
+    """
+    from django.http import JsonResponse
+    from .models import Comment
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.user in comment.likes.all():
+        comment.likes.remove(request.user)
+        liked = False
+    else:
+        comment.likes.add(request.user)
+        liked = True
+        # Send notification to comment author if not liker
+        if comment.author != request.user:
+            Notification.objects.create(
+                user=comment.author,
+                message=f"{request.user.full_name or request.user.username} liked your comment: \"{comment.content[:20]}...\""
+            )
+    return JsonResponse({'liked': liked, 'count': comment.likes.count()})
+
+
+@login_required
+def reply_to_comment(request, comment_id):
+    """
+    Adds a text reply to an existing comment.
+    """
+    from .models import Comment
+    import re
+    parent_comment = get_object_or_404(Comment, id=comment_id)
+    if request.method == "POST":
+        content = request.POST.get("reply_text", "").strip()
+        if content:
+            # AI Content Moderation for replies
+            profane_words = ["abuse", "spam", "badword", "stupid", "idiot", "nonsense", "vulgar", "fuck", "shit", "bitch", "bastard", "kamina", "saala", "kamine", "scam", "fraud"]
+            content_lower = content.lower()
+            flagged = False
+            for word in profane_words:
+                if re.search(r'\b' + re.escape(word) + r'\b', content_lower):
+                    flagged = True
+                    break
+            
+            if flagged:
+                Notification.objects.create(
+                    user=request.user,
+                    message=f'[Rules Violation] User {request.user.username} tried to post inappropriate reply: "{content[:50]}..."'
+                )
+                messages.error(request, "Please keep the feed professional. Inappropriate content detected in reply.")
+                return redirect('/dashboard/')
+
+            Comment.objects.create(post=parent_comment.post, author=request.user, content=content, parent=parent_comment)
+            
+            # Send notification to parent comment author if not reply author
+            if parent_comment.author != request.user:
+                Notification.objects.create(
+                    user=parent_comment.author,
+                    message=f"{request.user.full_name or request.user.username} replied to your comment: \"{content[:20]}...\""
+                )
+            messages.success(request, "Reply added successfully.")
+        else:
+            messages.error(request, "Reply cannot be empty.")
     return redirect('/dashboard/')

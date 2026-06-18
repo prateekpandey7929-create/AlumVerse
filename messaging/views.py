@@ -71,6 +71,14 @@ def send_message(request, user_id):
         is_read=False
     ).update(is_read=True)
 
+    # Mark corresponding notifications as read
+    Notification.objects.filter(
+        Q(message__iexact=f"New message from {receiver.username}") |
+        Q(message__icontains=f"New message from {receiver.username}"),
+        user=request.user,
+        is_read=False
+    ).update(is_read=True)
+
     return render(
         request,
         "chat.html",

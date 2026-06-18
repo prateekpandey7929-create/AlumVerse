@@ -33,7 +33,11 @@ toggle_save,
 increment_video_view,
 add_comment,
 edit_post,
-repost
+admin_notifications,
+admin_send_warning,
+clear_notifications,
+toggle_comment_like,
+reply_to_comment
 )
 
 from alumni.views import (
@@ -123,7 +127,9 @@ urlpatterns = [
 
     path('dashboard/edit-post/<int:post_id>/', edit_post),
 
-    path('dashboard/repost/<int:post_id>/', repost),
+    path('dashboard/comment/like/<int:comment_id>/', toggle_comment_like),
+
+    path('dashboard/comment/reply/<int:comment_id>/', reply_to_comment),
 
     path('profile/', profile),
 
@@ -145,6 +151,8 @@ urlpatterns = [
 
     path('admin-dashboard/approve-request/<int:request_id>/', admin_approve_request),
     path('admin-dashboard/reject-request/<int:request_id>/', admin_reject_request),
+    path('admin-dashboard/notifications/', admin_notifications),
+    path('admin-dashboard/send-warning/<int:user_id>/', admin_send_warning),
 
 
     # ================= ALUMNI =================
@@ -174,6 +182,7 @@ urlpatterns = [
     path('inbox/', inbox),
 
     path('notifications/', notifications),
+    path('notifications/clear/', clear_notifications),
 
 
     # ================= AI FEATURES =================

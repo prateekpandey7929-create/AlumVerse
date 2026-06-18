@@ -28,15 +28,27 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 text-center text-md-end d-flex flex-column flex-sm-row justify-content-md-end gap-2">
-                {% if user.role == 'alumni' %}
-                    <a href="/profile/id-card/" class="btn btn-warning px-3 py-2 shadow-sm fw-bold">
-                        <i class="bi bi-card-heading me-1"></i> Digital ID Card
+            <div class="col-md-4 text-center text-md-end d-flex flex-column justify-content-md-end gap-2 align-items-md-end">
+                <!-- Top Row: ID Card & Edit Profile -->
+                <div class="d-flex justify-content-center justify-content-md-end gap-2 flex-wrap w-100">
+                    {% if user.role == 'alumni' %}
+                        <a href="/profile/id-card/" class="btn btn-warning px-3 py-2 shadow-sm fw-bold d-inline-flex align-items-center justify-content-center gap-1" style="min-width: 170px; border-radius: 6px;">
+                            <i class="bi bi-card-heading"></i> Digital ID Card
+                        </a>
+                    {% endif %}
+                    <a href="/edit-profile/" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold d-inline-flex align-items-center justify-content-center gap-1" style="min-width: 170px; border-radius: 6px;">
+                        <i class="bi bi-pencil-square"></i> Edit Profile
                     </a>
-                {% endif %}
-                <a href="/edit-profile/" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold">
-                    <i class="bi bi-pencil-square me-1"></i> Edit Profile
-                </a>
+                </div>
+                <!-- Bottom Row: Tab Navigation Toggles (My Posts & Saved Posts) -->
+                <div class="d-flex justify-content-center justify-content-md-end gap-2 flex-wrap w-100 mt-md-1">
+                    <button id="btn-my-posts" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold d-inline-flex align-items-center justify-content-center gap-1" onclick="switchProfileTab('posts')" style="min-width: 170px; border-radius: 6px;">
+                        <i class="bi bi-grid-3x3-gap"></i> My Posts
+                    </button>
+                    <button id="btn-saved-posts" class="btn btn-light px-4 py-2 shadow-sm text-primary fw-bold d-inline-flex align-items-center justify-content-center gap-1" onclick="switchProfileTab('saved')" style="min-width: 170px; border-radius: 6px;">
+                        <i class="bi bi-bookmark-fill"></i> Saved Posts
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -45,51 +57,106 @@
     <div class="row g-4">
         <!-- LEFT COLUMN SECTION -->
         <div class="col-lg-8 col-md-12">
-            <!-- About Card -->
-            <div class="profile-card">
-                <h4><i class="bi bi-info-circle text-primary me-2"></i>About Professional</h4>
-                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
-                    {{ user.profile.bio|default:"Describe yourself by updating your biography." }}
-                </p>
-            </div>
-
-            <!-- Skills Card -->
-            <div class="profile-card">
-                <h4><i class="bi bi-puzzle text-primary me-2"></i>Verified Skills</h4>
-                {% if user.profile.skills %}
-                    <p class="text-secondary mb-0" style="font-size: 14.5px;">
-                        {{ user.profile.skills }}
+            <!-- PROFILE OVERVIEW SECTION -->
+            <div id="profile-overview-section">
+                <!-- About Card -->
+                <div class="profile-card">
+                    <h4><i class="bi bi-info-circle text-primary me-2"></i>About Professional</h4>
+                    <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                        {{ user.profile.bio|default:"Describe yourself by updating your biography." }}
                     </p>
-                {% else %}
-                    <p class="text-muted small mb-0">No specific skills listed. Edit your profile to list skills.</p>
-                {% endif %}
-            </div>
+                </div>
 
-            <!-- Projects Card -->
-            <div class="profile-card">
-                <h4><i class="bi bi-kanban text-primary me-2"></i>Projects & Accomplishments</h4>
-                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
-                    {{ user.profile.projects|default:"No active project details declared." }}
-                </p>
-            </div>
+                <!-- Skills Card -->
+                <div class="profile-card">
+                    <h4><i class="bi bi-puzzle text-primary me-2"></i>Verified Skills</h4>
+                    {% if user.profile.skills %}
+                        <p class="text-secondary mb-0" style="font-size: 14.5px;">
+                            {{ user.profile.skills }}
+                        </p>
+                    {% else %}
+                        <p class="text-muted small mb-0">No specific skills listed. Edit your profile to list skills.</p>
+                    {% endif %}
+                </div>
 
-            <!-- Achievements Card -->
-            <div class="profile-card">
-                <h4><i class="bi bi-trophy text-primary me-2"></i>Key Achievements</h4>
-                <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
-                    {{ user.profile.achievements|default:"No awards or achievements added yet." }}
-                </p>
-            </div>
-
-            <!-- Job Experience Details -->
-            <div class="profile-card">
-                <h4><i class="bi bi-journal-check text-primary me-2"></i>Employment Experience</h4>
-                <div class="p-3 bg-light rounded" style="border-left: 4px solid var(--primary);">
-                    <h5 class="mb-1 fw-bold text-dark">{% if user.profile.job_role %}{{ user.profile.job_role }}{% else %}{% if user.role == 'alumni' %}Alumni Member{% else %}Student Member{% endif %}{% endif %}</h5>
-                    <p class="mb-2 text-primary" style="font-weight: 500;">{{ user.profile.company|default:"N/A" }}</p>
-                    <p class="text-muted small mb-0">
-                        <i class="bi bi-calendar3 me-1"></i> Cumulative Experience: {{ user.profile.experience|default:"0" }} years
+                <!-- Projects Card -->
+                <div class="profile-card">
+                    <h4><i class="bi bi-kanban text-primary me-2"></i>Projects & Accomplishments</h4>
+                    <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                        {{ user.profile.projects|default:"No active project details declared." }}
                     </p>
+                </div>
+
+                <!-- Achievements Card -->
+                <div class="profile-card">
+                    <h4><i class="bi bi-trophy text-primary me-2"></i>Key Achievements</h4>
+                    <p class="text-secondary" style="font-size: 14.5px; white-space: pre-line;">
+                        {{ user.profile.achievements|default:"No awards or achievements added yet." }}
+                    </p>
+                </div>
+
+                <!-- Job Experience Details -->
+                <div class="profile-card">
+                    <h4><i class="bi bi-journal-check text-primary me-2"></i>Employment Experience</h4>
+                    <div class="p-3 bg-light rounded" style="border-left: 4px solid var(--primary);">
+                        <h5 class="mb-1 fw-bold text-dark">{% if user.profile.job_role %}{{ user.profile.job_role }}{% else %}{% if user.role == 'alumni' %}Alumni Member{% else %}Student Member{% endif %}{% endif %}</h5>
+                        <p class="mb-2 text-primary" style="font-weight: 500;">{{ user.profile.company|default:"N/A" }}</p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-calendar3 me-1"></i> Cumulative Experience: {{ user.profile.experience|default:"0" }} years
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MY POSTS SECTION -->
+            <div id="profile-posts-section" class="d-none">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                    <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-grid-3x3-gap text-primary"></i> My Published Posts
+                    </h4>
+                    <a href="#" onclick="switchProfileTab('overview'); return false;" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" style="border-radius: 6px;">
+                        <i class="bi bi-arrow-left"></i> Back to Profile
+                    </a>
+                </div>
+
+                <div class="timeline-posts-list">
+                    {% for post in my_posts %}
+                        {% include 'dashboard/post_card.html' with post=post %}
+                    {% empty %}
+                        <div class="text-center py-5 bg-white shadow-sm rounded-4 border">
+                            <div class="rounded-circle bg-light p-3 mx-auto mb-3 text-muted d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                                <i class="bi bi-chat-square-text"></i>
+                            </div>
+                            <h5 class="fw-bold">No posts published yet</h5>
+                            <p class="text-muted small">Go to your feed to write and publish your first post!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SAVED POSTS SECTION -->
+            <div id="profile-saved-section" class="d-none">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                    <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-bookmark-fill text-primary"></i> Saved Posts
+                    </h4>
+                    <a href="#" onclick="switchProfileTab('overview'); return false;" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" style="border-radius: 6px;">
+                        <i class="bi bi-arrow-left"></i> Back to Profile
+                    </a>
+                </div>
+
+                <div class="timeline-posts-list">
+                    {% for post in saved_posts %}
+                        {% include 'dashboard/post_card.html' with post=post %}
+                    {% empty %}
+                        <div class="text-center py-5 bg-white shadow-sm rounded-4 border">
+                            <div class="rounded-circle bg-light p-3 mx-auto mb-3 text-muted d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                                <i class="bi bi-bookmark"></i>
+                            </div>
+                            <h5 class="fw-bold">No saved posts yet</h5>
+                            <p class="text-muted small">Save interesting posts in your feed to view them here later!</p>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -162,12 +229,216 @@
             <div class="profile-card">
                 <h5 class="fw-bold mb-3"><i class="bi bi-percent text-primary me-2"></i>Profile Completion</h5>
                 <div class="progress mt-3 mb-2" style="height: 12px;">
-                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ profile.completion_percentage }}%" aria-valuenow="{{ profile.completion_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ profile.completion_percentage }}%</div>
                 </div>
-                <small class="text-muted d-block mt-2">Add accomplishments to hit 100%.</small>
+                <small class="text-muted d-block mt-2">
+                    {% if profile.completion_percentage < 100 %}
+                        Add details or handles to hit 100%.
+                    {% else %}
+                        Your profile is fully complete! Outstanding!
+                    {% endif %}
+                </small>
             </div>
         </div>
     </div>
 
 </div>
+<script>
+// Tab switcher for Profile Sections
+function switchProfileTab(tabName) {
+    const overviewSection = document.getElementById('profile-overview-section');
+    const postsSection = document.getElementById('profile-posts-section');
+    const savedSection = document.getElementById('profile-saved-section');
+    
+    const myPostsBtn = document.getElementById('btn-my-posts');
+    const savedPostsBtn = document.getElementById('btn-saved-posts');
+
+    if (tabName === 'overview') {
+        overviewSection.classList.remove('d-none');
+        postsSection.classList.add('d-none');
+        savedSection.classList.add('d-none');
+        
+        myPostsBtn.classList.remove('btn-warning', 'text-dark', 'active');
+        myPostsBtn.classList.add('btn-light', 'text-primary');
+        savedPostsBtn.classList.remove('btn-warning', 'text-dark', 'active');
+        savedPostsBtn.classList.add('btn-light', 'text-primary');
+    } else if (tabName === 'posts') {
+        overviewSection.classList.add('d-none');
+        postsSection.classList.remove('d-none');
+        savedSection.classList.add('d-none');
+        
+        myPostsBtn.classList.remove('btn-light', 'text-primary');
+        myPostsBtn.classList.add('btn-warning', 'text-dark', 'active');
+        savedPostsBtn.classList.remove('btn-warning', 'text-dark', 'active');
+        savedPostsBtn.classList.add('btn-light', 'text-primary');
+    } else if (tabName === 'saved') {
+        overviewSection.classList.add('d-none');
+        postsSection.classList.add('d-none');
+        savedSection.classList.remove('d-none');
+        
+        myPostsBtn.classList.remove('btn-warning', 'text-dark', 'active');
+        myPostsBtn.classList.add('btn-light', 'text-primary');
+        savedPostsBtn.classList.remove('btn-light', 'text-primary');
+        savedPostsBtn.classList.add('btn-warning', 'text-dark', 'active');
+    }
+}
+
+// CSRF Token utility
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+
+// Collapsible comments drawer toggler
+function toggleCommentsDrawer(postId) {
+    const drawer = document.getElementById(`comments-drawer-${postId}`);
+    if (drawer) {
+        drawer.classList.toggle('d-none');
+    }
+}
+
+// Toggle Reply Form
+function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    if (form) {
+        form.classList.toggle('d-none');
+    }
+}
+
+// AJAX Toggle for Comment Likes
+function toggleCommentLike(button, commentId) {
+    const url = `/dashboard/comment/like/${commentId}/`;
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const icon = button.querySelector('i');
+        const count = button.querySelector('.comment-like-count');
+        
+        if (data.liked) {
+            icon.className = 'bi bi-heart-fill text-danger me-1';
+        } else {
+            icon.className = 'bi bi-heart me-1';
+        }
+        if (count) {
+            count.textContent = data.count;
+        }
+    })
+    .catch(err => console.error("Error liking comment:", err));
+}
+
+// Ajax like toggle
+function toggleLike(button, postId) {
+    const url = `/dashboard/like/${postId}/`;
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const icon = button.querySelector('i');
+        const text = button.querySelector('span');
+        const count = button.querySelector('.count-badge');
+        
+        if (data.liked) {
+            icon.className = 'bi bi-heart-fill text-danger fs-5';
+            text.textContent = 'Liked';
+            text.className = 'text-danger';
+        } else {
+            icon.className = 'bi bi-heart fs-5';
+            text.textContent = 'Like';
+            text.className = '';
+        }
+        if (count) count.textContent = data.count;
+    })
+    .catch(err => console.error("Error liking post:", err));
+}
+
+// Ajax save toggle
+function toggleSave(button, postId) {
+    const url = `/dashboard/save/${postId}/`;
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const icon = button.querySelector('i');
+        const text = button.querySelector('span');
+        
+        if (data.saved) {
+            icon.className = 'bi bi-bookmark-dash-fill text-primary fs-5';
+            text.textContent = 'Saved';
+            text.className = 'text-primary';
+        } else {
+            icon.className = 'bi bi-bookmark fs-5';
+            text.textContent = 'Save';
+            text.className = '';
+            
+            // If we are currently on the saved posts tab, remove the post card dynamically from the list
+            const savedSection = document.getElementById('profile-saved-section');
+            if (savedSection && !savedSection.classList.contains('d-none')) {
+                const card = button.closest('.post-feed-card');
+                if (card) {
+                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        card.remove();
+                        // Check if list is now empty
+                        const list = savedSection.querySelector('.timeline-posts-list');
+                        if (list && list.children.length === 0) {
+                            list.innerHTML = `
+                                <div class="text-center py-5 bg-white shadow-sm rounded-4 border">
+                                    <div class="rounded-circle bg-light p-3 mx-auto mb-3 text-muted d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                                        <i class="bi bi-bookmark"></i>
+                                    </div>
+                                    <h5 class="fw-bold">No saved posts yet</h5>
+                                    <p class="text-muted small">Save interesting posts in your feed to view them here later!</p>
+                                </div>`;
+                        }
+                    }, 300);
+                }
+            }
+        }
+    })
+    .catch(err => console.error("Error saving post:", err));
+}
+
+// Ajax video view play tracker
+function trackVideoPlay(videoId) {
+    if (sessionStorage.getItem(`video-played-${videoId}`)) return;
+    
+    const url = `/dashboard/video-view/${videoId}/`;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const countSpan = document.getElementById(`video-views-count-${videoId}`);
+        if (countSpan) {
+            countSpan.textContent = data.views;
+            sessionStorage.setItem(`video-played-${videoId}`, 'true');
+        }
+    })
+    .catch(err => console.error("Error tracking video views:", err));
+}
+</script>
 {% endblock %}

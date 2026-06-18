@@ -473,23 +473,55 @@ class CommunityFeedAndAITests(TestCase):
         post.refresh_from_db()
         self.assertEqual(post.content, "Updated Text")
 
-    def test_repost_post(self):
+    def test_comment_like_toggle(self):
         """
-        Tests reposting another user's post.
+        Tests toggling comment like state via AJAX.
         """
-        from accounts.models import Post
-        original = Post.objects.create(author=self.student, content="Original Post", category="general")
-        self.assertEqual(Post.objects.count(), 1)
+        from accounts.models import Post, Comment
+        post = Post.objects.create(author=self.student, content="Test Post", category="general")
+        comment = Comment.objects.create(post=post, author=self.student, content="Test Comment")
+        self.assertEqual(comment.likes.count(), 0)
 
-        response = self.client.post(f"/dashboard/repost/{original.id}/", {
-            "repost_comment": "Check this original!",
-            "category": "general"
+        # Like comment
+        response = self.client.post(f"/dashboard/comment/like/{comment.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['liked'])
+        self.assertEqual(response.json()['count'], 1)
+
+        # Unlike comment
+        response = self.client.post(f"/dashboard/comment/like/{comment.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['liked'])
+        self.assertEqual(response.json()['count'], 0)
+
+    def test_reply_to_comment(self):
+        """
+        Tests creating a nested reply to a comment.
+        """
+        from accounts.models import Post, Comment
+        post = Post.objects.create(author=self.student, content="Test Post", category="general")
+        parent_comment = Comment.objects.create(post=post, author=self.student, content="Parent Comment")
+
+        response = self.client.post(f"/dashboard/comment/reply/{parent_comment.id}/", {
+            "reply_text": "This is a nested reply"
         })
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Post.objects.count(), 2)
-        repost = Post.objects.exclude(id=original.id).first()
-        self.assertEqual(repost.parent_post, original)
-        self.assertEqual(repost.content, "Check this original!")
+        
+        reply = Comment.objects.filter(parent=parent_comment).first()
+        self.assertIsNotNone(reply)
+        self.assertEqual(reply.content, "This is a nested reply")
+        self.assertEqual(reply.post, post)
+
+    def test_repost_disabled(self):
+        """
+        Tests that the repost endpoint is removed / disabled.
+        """
+        from accounts.models import Post
+        post = Post.objects.create(author=self.student, content="Test Post", category="general")
+        response = self.client.post(f"/dashboard/repost/{post.id}/", {
+            "repost_comment": "Try to repost"
+        })
+        self.assertEqual(response.status_code, 404)
 
     def test_profile_views_count(self):
         """
@@ -525,6 +557,333 @@ class CommunityFeedAndAITests(TestCase):
         # Own view should NOT increment views_count
         alumni.profile.refresh_from_db()
         self.assertEqual(alumni.profile.views_count, 1)
+
+    def test_profile_my_and_saved_posts(self):
+        """
+        Tests that user's own profile view contains correct querysets for my_posts and saved_posts.
+        """
+        from accounts.models import Post
+        # Create a post by this student
+        my_post = Post.objects.create(
+            author=self.student,
+            content="My student post",
+            category="general"
+        )
+        
+        # Create another post and save it
+        other_user = User.objects.create_user(
+            username="other_auth",
+            email="other_auth@gmail.com",
+            password="Password123!"
+        )
+        saved_post = Post.objects.create(
+            author=other_user,
+            content="Saved other post",
+            category="general"
+        )
+        saved_post.saves.add(self.student)
+        
+        # Request profile
+        response = self.client.get("/profile/")
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("my_posts", response.context)
+        self.assertIn("saved_posts", response.context)
+        
+        self.assertEqual(list(response.context["my_posts"]), [my_post])
+        self.assertEqual(list(response.context["saved_posts"]), [saved_post])
+
+    def test_profile_completion_percentage(self):
+        """
+        Tests that completion_percentage computes correct values for both student and alumni roles.
+        """
+        # Test student completion (initially empty, so 0%)
+        student_profile = self.student.profile
+        self.assertEqual(student_profile.completion_percentage, 0)
+        
+        # Update some fields for student
+        student_profile.bio = "High-achieving student"
+        student_profile.skills = "Python, Django"
+        student_profile.save()
+        # 2 fields filled out of 8 = 25%
+        self.assertEqual(student_profile.completion_percentage, 25)
+        
+        # Test alumni completion
+        alumni = User.objects.create_user(
+            username="alum_comp",
+            email="alum_comp@indoreinstitute.com",
+            password="Password123!",
+            role="alumni"
+        )
+        alumni_profile = alumni.profile
+        self.assertEqual(alumni_profile.completion_percentage, 0)
+        
+        alumni_profile.bio = "Experienced developer"
+        alumni_profile.company = "Google"
+        alumni_profile.save()
+        # 2 fields filled out of 11 = 18% (rounded from 18.18%)
+        self.assertEqual(alumni_profile.completion_percentage, 18)
+
+
+class NotificationAndAdminTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Create student user
+        self.student = User.objects.create_user(
+            username="student_user",
+            email="student@indoreinstitute.com",
+            password="Password123!",
+            role="student"
+        )
+        # Create alumni user
+        self.alumni = User.objects.create_user(
+            username="alumni_user",
+            email="alumni@indoreinstitute.com",
+            password="Password123!",
+            role="alumni"
+        )
+        # Create admin user
+        self.admin = User.objects.create_user(
+            username="admin_user",
+            email="admin@indoreinstitute.com",
+            password="Password123!",
+            role="admin",
+            is_staff=True,
+            is_superuser=True
+        )
+
+    def test_notification_clearing_on_chat_view(self):
+        """
+        Tests that viewing a direct chat marks message notifications from that sender as read.
+        """
+        from messaging.models import Message
+        from accounts.models import Notification
+
+        self.client.login(username="student_user", password="Password123!")
+
+        # Create a message from alumni to student
+        Message.objects.create(
+            sender=self.alumni,
+            receiver=self.student,
+            message="Hello Student!"
+        )
+        # Create corresponding notification
+        Notification.objects.create(
+            user=self.student,
+            message=f"New message from {self.alumni.username}"
+        )
+
+        self.assertEqual(Notification.objects.filter(user=self.student, is_read=False).count(), 1)
+
+        response = self.client.get(f"/messages/{self.alumni.id}/")
+        self.assertEqual(response.status_code, 200)
+
+        # Notification should be read
+        self.assertEqual(Notification.objects.filter(user=self.student, is_read=False).count(), 0)
+
+    def test_notification_clearing_on_job_view(self):
+        """
+        Tests that visiting the jobs hub clears opportunity notifications for students.
+        """
+        from jobs.models import Opportunity
+        from accounts.models import Notification
+
+        import datetime
+        Opportunity.objects.create(
+            title="Software Intern",
+            company="Google",
+            description="Good coding skills required.",
+            location="Remote",
+            deadline=datetime.date.today(),
+            type="internship",
+            posted_by=self.alumni
+        )
+        Notification.objects.create(
+            user=self.student,
+            message="New internship posted: Software Intern"
+        )
+        
+        self.assertEqual(Notification.objects.filter(user=self.student, is_read=False).count(), 1)
+
+        self.client.login(username="student_user", password="Password123!")
+        response = self.client.get("/jobs/")
+        self.assertEqual(response.status_code, 200)
+
+        # Notification should be read
+        self.assertEqual(Notification.objects.filter(user=self.student, is_read=False).count(), 0)
+
+    def test_rules_violation_moderation_logs(self):
+        """
+        Tests that blocked profane posts/comments log rules violations.
+        """
+        from accounts.models import Notification
+        self.client.login(username="student_user", password="Password123!")
+
+        response = self.client.post("/dashboard/", {
+            "create_post": "1",
+            "content": "This is absolute spam and nonsense.",
+            "category": "general"
+        })
+        self.assertEqual(response.status_code, 302)
+
+        violation = Notification.objects.filter(user=self.student).first()
+        self.assertIsNotNone(violation)
+        self.assertIn("[Rules Violation]", violation.message)
+
+    def test_admin_notifications_and_warning_dispatch(self):
+        """
+        Tests the admin notifications dashboard and the dispatch of warnings.
+        """
+        from accounts.models import Notification
+        from django.core import mail
+
+        self.client.login(username="admin_user", password="Password123!")
+
+        response = self.client.get("/admin-dashboard/notifications/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(f"/admin-dashboard/send-warning/{self.student.id}/")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/admin-dashboard/notifications/?tab=rules")
+
+        warning_notif = Notification.objects.filter(user=self.student, message__icontains="warning").first()
+        self.assertIsNotNone(warning_notif)
+        
+        self.assertTrue(len(mail.outbox) >= 1)
+
+    def test_admin_notifications_deduplication(self):
+        """
+        Tests that duplicate notifications are hidden/deduplicated in the admin notifications dashboard.
+        """
+        from accounts.models import Notification
+        
+        # Create duplicate notifications
+        Notification.objects.create(user=self.student, message="New job posted: DevOps Engineer")
+        Notification.objects.create(user=self.alumni, message="New job posted: DevOps Engineer")
+        
+        self.client.login(username="admin_user", password="Password123!")
+        
+        response = self.client.get("/admin-dashboard/notifications/?tab=job")
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify only 1 notification is rendered in the job tab
+        self.assertEqual(len(response.context["job_notifications"]), 1)
+
+    def test_navbar_bell_hidden_for_admin(self):
+        """
+        Tests that the navbar notification bell icon is hidden for admin users.
+        """
+        # When logged in as student, bell is visible
+        self.client.login(username="student_user", password="Password123!")
+        response = self.client.get("/dashboard/")
+        self.assertContains(response, 'title="Notifications"')
+
+        # When logged in as admin, bell is hidden
+        self.client.login(username="admin_user", password="Password123!")
+        response = self.client.get("/dashboard/")
+        self.assertNotContains(response, 'title="Notifications"')
+
+    def test_clear_notifications_route(self):
+        """
+        Tests that calling the clear notifications route deletes all notifications for the user.
+        """
+        from accounts.models import Notification
+        
+        Notification.objects.create(user=self.student, message="Test Notification 1")
+        Notification.objects.create(user=self.student, message="Test Notification 2")
+        
+        self.assertEqual(Notification.objects.filter(user=self.student).count(), 2)
+        
+        self.client.login(username="student_user", password="Password123!")
+        response = self.client.get("/notifications/clear/")
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/notifications/")
+        
+        # Verify they are deleted
+        self.assertEqual(Notification.objects.filter(user=self.student).count(), 0)
+
+    def test_notifications_page_clears_messages_count(self):
+        """
+        Tests that visiting the notifications page marks all messages as read.
+        """
+        from messaging.models import Message
+        
+        Message.objects.create(sender=self.alumni, receiver=self.student, message="Test message")
+        
+        self.client.login(username="student_user", password="Password123!")
+        
+        # Verify message is unread
+        self.assertEqual(Message.objects.filter(receiver=self.student, is_read=False).count(), 1)
+        
+        # Visit notifications page
+        response = self.client.get("/notifications/")
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify message is marked as read
+        self.assertEqual(Message.objects.filter(receiver=self.student, is_read=False).count(), 0)
+
+    def test_job_alert_to_student_and_alumni(self):
+        """
+        Tests that posting an opportunity sends alert notifications to both students and alumni.
+        """
+        from accounts.models import Notification
+        
+        # Admin posts a job
+        self.client.login(username="admin_user", password="Password123!")
+        
+        response = self.client.post("/post-job/", {
+            "title": "Staff Engineer",
+            "company": "Amazon",
+            "description": "Amazon is hiring.",
+            "location": "New York",
+            "deadline": "2027-12-31",
+            "type": "job"
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Check student received alert
+        student_alert = Notification.objects.filter(user=self.student, message__icontains="Staff Engineer").first()
+        self.assertIsNotNone(student_alert)
+        
+        # Check alumni received alert
+        alumni_alert = Notification.objects.filter(user=self.alumni, message__icontains="Staff Engineer").first()
+        self.assertIsNotNone(alumni_alert)
+
+    def test_personalized_like_comment_notifications(self):
+        """
+        Tests that notifications for post likes and comments contain the user's full name.
+        """
+        from accounts.models import Post, Notification
+        
+        # Let's assign a full name to self.alumni
+        self.alumni.full_name = "Jane Doe"
+        self.alumni.save()
+        
+        # Student creates a post
+        post = Post.objects.create(author=self.student, content="Personalized test post", category="general")
+        
+        # Alumni likes the post
+        self.client.login(username="alumni_user", password="Password123!")
+        response = self.client.post(f"/dashboard/like/{post.id}/")
+        self.assertEqual(response.status_code, 200)
+        
+        # Check notification message for student (post author)
+        like_notif = Notification.objects.filter(user=self.student, message__icontains="liked your post").first()
+        self.assertIsNotNone(like_notif)
+        self.assertIn("Jane Doe", like_notif.message)
+        
+        # Alumni comments on the post
+        response = self.client.post(f"/dashboard/comment/{post.id}/", {
+            "comment_text": "Interesting post!"
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Check comment notification message for student
+        comment_notif = Notification.objects.filter(user=self.student, message__icontains="commented on your post").first()
+        self.assertIsNotNone(comment_notif)
+        self.assertIn("Jane Doe", comment_notif.message)
+
+
 
 
 

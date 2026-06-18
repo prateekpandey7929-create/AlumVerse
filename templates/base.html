@@ -75,7 +75,8 @@
 
                     <!-- USER LOGGED IN -->
                     {% if user.is_authenticated %}
-                    <!-- Bell Icon Notification Button -->
+                    <!-- Bell Icon Notification Button (hidden for admins) -->
+                    {% if user.role != 'admin' and not user.is_superuser %}
                     <li class="nav-item me-2">
                         <a href="/notifications/" class="nav-link p-2 text-dark position-relative" title="Notifications"
                             style="text-decoration: none;">
@@ -88,6 +89,7 @@
                             {% endif %}
                         </a>
                     </li>
+                    {% endif %}
 
                     {% if user.role == 'admin' or user.is_superuser %}
                     <li class="nav-item">
@@ -127,8 +129,7 @@
                         <div class="sidebar-brand-card">
                             <img src="{{ user.profile.profile_photo_url }}" class="sidebar-brand-avatar" alt="Avatar">
                             <div class="ms-3 overflow-hidden">
-                                <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.full_name|default:user.username
-                                    }}</h6>
+                                <h6 class="mb-0 fw-bold text-dark text-truncate">{{ user.full_name|default:user.username }}</h6>
                                 <small class="text-muted text-uppercase"
                                     style="font-size: 9px; font-weight: 700; letter-spacing: 0.5px;">
                                     {% if user.role == "alumni" %}
@@ -167,9 +168,14 @@
                             </li>
                             <li>
                                 <a href="/inbox/"
-                                    class="sidebar-link {% if request.path == '/inbox/' %}active{% endif %}">
-                                    <i class="bi bi-envelope-open-fill"></i>
-                                    <span>Inbox</span>
+                                    class="sidebar-link {% if request.path == '/inbox/' %}active{% endif %} d-flex align-items-center justify-content-between">
+                                    <span>
+                                        <i class="bi bi-envelope-open-fill me-2"></i>
+                                        <span>Inbox</span>
+                                    </span>
+                                    {% if unread_messages > 0 %}
+                                    <span class="badge bg-danger rounded-pill" style="font-size: 10px; padding: 3px 6px;">{{ unread_messages }}</span>
+                                    {% endif %}
                                 </a>
                             </li>
 

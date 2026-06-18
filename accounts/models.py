@@ -102,6 +102,40 @@ class Profile(models.Model):
                 pass
         return '/static/images/profile.png'
 
+    @property
+    def completion_percentage(self):
+        # Base fields for both students and alumni
+        fields_to_check = [
+            self.bio,
+            self.skills,
+            self.projects,
+            self.achievements,
+            self.linkedin,
+            self.github,
+            self.portfolio,
+            self.profile_photo,
+        ]
+        
+        # Add professional fields only for alumni
+        if self.user.role == 'alumni':
+            fields_to_check.extend([
+                self.company,
+                self.job_role,
+                self.experience,
+            ])
+            
+        filled_count = 0
+        for field in fields_to_check:
+            if field:
+                if isinstance(field, str) and not field.strip():
+                    continue
+                filled_count += 1
+                
+        total_fields = len(fields_to_check)
+        if total_fields == 0:
+            return 100
+        return int((filled_count / total_fields) * 100)
+
 
 
 @receiver(post_save, sender=User)
@@ -160,6 +194,10 @@ class Post(models.Model):
     saves = models.ManyToManyField(User, related_name='saved_posts', blank=True)
     parent_post = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='reposts')
 
+    @property
+    def root_comments(self):
+        return self.comments.filter(parent=None).order_by('created_at')
+
     def __str__(self):
         return f"{self.author.username} - {self.category} ({self.created_at.strftime('%Y-%m-%d')})"
 
@@ -186,6 +224,8 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, related_name='liked_comments', blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
     def __str__(self):
         return f"Comment by {self.author.username} on post {self.post.id}"

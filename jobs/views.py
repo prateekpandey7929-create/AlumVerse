@@ -19,13 +19,12 @@ def post_opportunity(request):
 
             opportunity.save()
 
-            students = User.objects.filter(role='student')
-
-            for student in students:
+            recipients = User.objects.filter(role__in=['student', 'alumni']).exclude(id=request.user.id)
+            for recipient in recipients:
                 Notification.objects.create(
-                user=student,
-                message=f"New {opportunity.type} posted: {opportunity.title}"
-            )
+                    user=recipient,
+                    message=f"New {opportunity.type} posted: {opportunity.title}"
+                )
 
             return redirect('/jobs/')
 
@@ -35,6 +34,12 @@ def post_opportunity(request):
 
     return render(request, 'post_opportunity.html', {'form': form})
 
+@login_required
 def job_list(request):
     opportunities = Opportunity.objects.all().order_by('-created_at')
+    Notification.objects.filter(
+        user=request.user,
+        message__icontains="posted:",
+        is_read=False
+    ).update(is_read=True)
     return render(request, 'jobs.html', {'opportunities': opportunities})
